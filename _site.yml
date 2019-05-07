@@ -7,3 +7,10 @@ navbar:
       href: index.html
     - text: "Projects"
       href: projects.html
+  right:
+    - icon: fa-envelope fa-lg
+      href: contact.html
+    - icon: fa-github fa-lg
+      href: http://github.com/cguedenet
+    - icon: fa-linkedin fa-lg
+      href: https://www.linkedin.com/in/guedenet/
