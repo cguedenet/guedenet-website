@@ -1,0 +1,9 @@
+name: "Charles Guedenet website"
+output_dir: "."
+navbar:  
+  title: "Charles Guedenet Website"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html

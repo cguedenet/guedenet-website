@@ -1,0 +1,5 @@
+---
+title: "projects"
+---
+
+This page is under construction. I'll be adding fun data projects here.
