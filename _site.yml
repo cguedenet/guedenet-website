@@ -14,3 +14,7 @@ navbar:
       href: http://github.com/cguedenet
     - icon: fa-linkedin fa-lg
       href: https://www.linkedin.com/in/guedenet/
+output:
+  html_document:
+  theme: paper
+  css: 'styles.css'
