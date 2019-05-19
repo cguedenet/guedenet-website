@@ -1,9 +1,9 @@
 ---
-title: "projects and tutorials"
+title: "Projects and Tutorials"
 ---
 
-##Tutorials
-
+##Tutorials  
+- [2018 MERL Tech DC workshop: Up your Data Game with R](merl.tech.html)
 
 
 ##Projects
