@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>MERL Tech DC workshop: Up your Data Game with R</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Charles Guedenet Website</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="projects.html">Projects and tutorials</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="contact.html">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/cguedenet">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/guedenet/">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">MERL Tech DC workshop: Up your Data Game with R</h1>
+
+</div>
+
+
+<p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook. When you execute code within the notebook, the results appear beneath the code.</p>
+<p>R Studio is an “Integrated Development Environment”, or IDE. This means it is a front-end for R that makes it much easier to work with. R Studio is also free, and available for Windows, Mac, and Linux platforms.</p>
+<pre class="r"><code># This is where you execute R ccommands. R interprets what you write and prints the results
+1 + 1
+
+# A basic concept in programming is called a variable. A variable allows you to store a value (e.g. 5) or an object (e.g. a function) in R for easy access later. 
+## TIP: use &quot;Alt&quot; + &quot;-&quot; instead of &quot;&lt;&quot; + &quot;-&quot;
+
+#creating variables for later use. Use the less sign followed by a dash to create a variable
+
+width &lt;- 5                       # assigns the value 5 to the variable &quot;width&quot;
+length &lt;- 8                      # assigns the value 8 to the variable &quot;width&quot;
+area &lt;- width * length           # multiple the values of both previous variables to create a new variable: &quot;area&quot; 
+
+area  # print the result</code></pre>
+<div id="cleaning-your-data" class="section level1">
+<h1>Cleaning your data</h1>
+<p>Analyzing survey data typically starts with cleaning, recoding, and restructuring, or even joining data sets. For example, you may want to know how many missing cases there are or how many people responded to each question. Or you may want to group certain continuous variables like ages or income into ranges. Lastly, you may want to find and deal with outliers.</p>
+<p>Functions like distinct() cab quickly get rid of duplicate rows across all variables or for specific variables (e.g. a person’s ID or email address)</p>
+<p>Functions like mutate() can help create new variables. For example, creating a new variable for age ranges based on an existing variable for age.</p>
+</div>
+<div id="overview-of-survey-data-and-basic-analysis" class="section level1">
+<h1>Overview of survey data and basic analysis</h1>
+<p>When you’re analyzing survey data, one of the first things you need to do is get an overview of your data. For example, you may want to know basic stats for continuous variables or frequency tables for other types of data.</p>
+<div id="get-summary-stats-for-age-and-agecut-variables" class="section level2">
+<h2>Get summary stats for Age and AgeCut variables</h2>
+<p>Min. 1st Qu. Median Mean 3rd Qu. Max. NA’s 10.00 23.00 27.00 29.18 33.00 86.00 2007 (10,29] (29,34] (34,50] (50,65] (65,100] NA’s 8240 2380 2564 400 27 2009</p>
+</div>
+<div id="add-new-stats" class="section level2">
+<h2>add new stats</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="right">mean</th>
+<th align="right">median</th>
+<th align="right">IQR</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">29.17542</td>
+<td align="right">27</td>
+<td align="right">10</td>
+<td align="right">15620</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="add-a-grouping-variable" class="section level2">
+<h2>add a grouping variable</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Gender</th>
+<th align="right">mean</th>
+<th align="right">median</th>
+<th align="right">IQR</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">agender</td>
+<td align="right">25.27778</td>
+<td align="right">25.5</td>
+<td align="right">7.25</td>
+<td align="right">38</td>
+</tr>
+<tr class="even">
+<td align="left">female</td>
+<td align="right">30.68599</td>
+<td align="right">28.0</td>
+<td align="right">11.00</td>
+<td align="right">2840</td>
+</tr>
+<tr class="odd">
+<td align="left">genderqueer</td>
+<td align="right">28.21538</td>
+<td align="right">27.0</td>
+<td align="right">9.00</td>
+<td align="right">66</td>
+</tr>
+<tr class="even">
+<td align="left">male</td>
+<td align="right">28.81574</td>
+<td align="right">27.0</td>
+<td align="right">10.00</td>
+<td align="right">10766</td>
+</tr>
+<tr class="odd">
+<td align="left">trans</td>
+<td align="right">30.00000</td>
+<td align="right">27.0</td>
+<td align="right">10.25</td>
+<td align="right">36</td>
+</tr>
+<tr class="even">
+<td align="left">NA</td>
+<td align="right">24.47500</td>
+<td align="right">23.5</td>
+<td align="right">7.00</td>
+<td align="right">1874</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="instructions" class="section level2">
+<h2>INSTRUCTIONS:</h2>
+<ol style="list-style-type: decimal">
+<li><p>Get summary statistics for another continuous variable, like income, MonthsProgramming, ExpectedEarning, MoneyForLearning, etc. (reference the df object)</p></li>
+<li><p>Add or change the summary stats you want to calculate (Other useful functions: mean, median, sd, IQR, min, max, quantile, first, last, nth, n, n_distinct)</p></li>
+<li><p>Add a new grouping variable</p></li>
+</ol>
+</div>
+<div id="heres-another-way-to-quickly-generate-summary-statistics-for-select-numeric-variables-using-the-psyche-package" class="section level2">
+<h2>Here’s another way to quickly generate summary statistics for select numeric variables using the psyche package</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">vars</th>
+<th align="right">n</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">median</th>
+<th align="right">trimmed</th>
+<th align="right">mad</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">range</th>
+<th align="right">skew</th>
+<th align="right">kurtosis</th>
+<th align="right">se</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Age</td>
+<td align="right">1</td>
+<td align="right">13613</td>
+<td align="right">29.175421</td>
+<td align="right">9.017717e+00</td>
+<td align="right">27</td>
+<td align="right">28.174915</td>
+<td align="right">7.4130</td>
+<td align="right">10</td>
+<td align="right">86</td>
+<td align="right">76</td>
+<td align="right">1.174216</td>
+<td align="right">1.8263327</td>
+<td align="right">0.0772894</td>
+</tr>
+<tr class="even">
+<td>Income</td>
+<td align="right">2</td>
+<td align="right">7329</td>
+<td align="right">44930.010506</td>
+<td align="right">3.558278e+04</td>
+<td align="right">37000</td>
+<td align="right">39292.514748</td>
+<td align="right">26983.3200</td>
+<td align="right">6000</td>
+<td align="right">200000</td>
+<td align="right">194000</td>
+<td align="right">1.933815</td>
+<td align="right">4.9750303</td>
+<td align="right">415.6402084</td>
+</tr>
+<tr class="odd">
+<td>ExpectedEarning</td>
+<td align="right">3</td>
+<td align="right">6077</td>
+<td align="right">53717.586967</td>
+<td align="right">3.007851e+04</td>
+<td align="right">50000</td>
+<td align="right">51741.349784</td>
+<td align="right">26686.8000</td>
+<td align="right">6000</td>
+<td align="right">200000</td>
+<td align="right">194000</td>
+<td align="right">1.455659</td>
+<td align="right">5.2844850</td>
+<td align="right">385.8439802</td>
+</tr>
+<tr class="even">
+<td>HoursLearning</td>
+<td align="right">4</td>
+<td align="right">14942</td>
+<td align="right">15.323317</td>
+<td align="right">1.427487e+01</td>
+<td align="right">10</td>
+<td align="right">12.846077</td>
+<td align="right">8.8956</td>
+<td align="right">0</td>
+<td align="right">100</td>
+<td align="right">100</td>
+<td align="right">2.039366</td>
+<td align="right">5.7127639</td>
+<td align="right">0.1167798</td>
+</tr>
+<tr class="odd">
+<td>Gender*</td>
+<td align="right">5</td>
+<td align="right">13746</td>
+<td align="right">3.576313</td>
+<td align="right">8.241731e-01</td>
+<td align="right">4</td>
+<td align="right">3.720495</td>
+<td align="right">0.0000</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">4</td>
+<td align="right">-1.411665</td>
+<td align="right">0.1077574</td>
+<td align="right">0.0070296</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="working-with-categorical-data" class="section level1">
+<h1>Working with Categorical data</h1>
+<div id="summarize-categorical-data-by-creating-frequency-tables-using-sjmisc-package" class="section level2">
+<h2>summarize categorical data by creating frequency tables using sjmisc package</h2>
+<p>Frequency table for the variable: “SchoolDegree”</p>
+<pre class="r"><code># summarize categorical data by creating frequency tables using sjmisc package
+df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
+<table class="kable_wrapper">
+<tbody>
+<tr>
+<td>
+<table>
+<thead>
+<tr class="header">
+<th align="left">val</th>
+<th align="right">frq</th>
+<th align="left">label</th>
+<th align="right">raw.prc</th>
+<th align="right">valid.prc</th>
+<th align="right">cum.prc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">associate’s degree</td>
+<td align="right">649</td>
+<td align="left"><none></td>
+<td align="right">4.15</td>
+<td align="right">4.74</td>
+<td align="right">4.74</td>
+</tr>
+<tr class="even">
+<td align="left">bachelor’s degree</td>
+<td align="right">5644</td>
+<td align="left"><none></td>
+<td align="right">36.13</td>
+<td align="right">41.26</td>
+<td align="right">46.00</td>
+</tr>
+<tr class="odd">
+<td align="left">high school diploma or equivalent (GED)</td>
+<td align="right">1356</td>
+<td align="left"><none></td>
+<td align="right">8.68</td>
+<td align="right">9.91</td>
+<td align="right">55.92</td>
+</tr>
+<tr class="even">
+<td align="left">master’s degree (non-professional)</td>
+<td align="right">1445</td>
+<td align="left"><none></td>
+<td align="right">9.25</td>
+<td align="right">10.56</td>
+<td align="right">66.48</td>
+</tr>
+<tr class="odd">
+<td align="left">no high school (secondary school)</td>
+<td align="right">258</td>
+<td align="left"><none></td>
+<td align="right">1.65</td>
+<td align="right">1.89</td>
+<td align="right">68.37</td>
+</tr>
+<tr class="even">
+<td align="left">Ph.D.</td>
+<td align="right">160</td>
+<td align="left"><none></td>
+<td align="right">1.02</td>
+<td align="right">1.17</td>
+<td align="right">69.54</td>
+</tr>
+<tr class="odd">
+<td align="left">professional degree (MBA, MD, JD, etc.)</td>
+<td align="right">692</td>
+<td align="left"><none></td>
+<td align="right">4.43</td>
+<td align="right">5.06</td>
+<td align="right">74.60</td>
+</tr>
+<tr class="even">
+<td align="left">some college credit, no degree</td>
+<td align="right">2268</td>
+<td align="left"><none></td>
+<td align="right">14.52</td>
+<td align="right">16.58</td>
+<td align="right">91.18</td>
+</tr>
+<tr class="odd">
+<td align="left">some high school</td>
+<td align="right">764</td>
+<td align="left"><none></td>
+<td align="right">4.89</td>
+<td align="right">5.59</td>
+<td align="right">96.76</td>
+</tr>
+<tr class="even">
+<td align="left">trade, technical, or vocational training</td>
+<td align="right">443</td>
+<td align="left"><none></td>
+<td align="right">2.84</td>
+<td align="right">3.24</td>
+<td align="right">100.00</td>
+</tr>
+<tr class="odd">
+<td align="left">NA</td>
+<td align="right">1941</td>
+<td align="left"><none></td>
+<td align="right">12.43</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="create-cross-tabulations-with-two-or-more-variables" class="section level2">
+<h2>create cross-tabulations with two or more variables</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="left">SchoolDegree</th>
+<th align="right">agender</th>
+<th align="right">female</th>
+<th align="right">genderqueer</th>
+<th align="right">male</th>
+<th align="right">trans</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">associate’s degree</td>
+<td align="right">1</td>
+<td align="right">111</td>
+<td align="right">2</td>
+<td align="right">534</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">bachelor’s degree</td>
+<td align="right">10</td>
+<td align="right">1336</td>
+<td align="right">30</td>
+<td align="right">4229</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">high school diploma or equivalent (GED)</td>
+<td align="right">6</td>
+<td align="right">165</td>
+<td align="right">4</td>
+<td align="right">1172</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">master’s degree (non-professional)</td>
+<td align="right">2</td>
+<td align="right">416</td>
+<td align="right">6</td>
+<td align="right">1010</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">no high school (secondary school)</td>
+<td align="right">3</td>
+<td align="right">17</td>
+<td align="right">3</td>
+<td align="right">231</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Ph.D.</td>
+<td align="right">1</td>
+<td align="right">41</td>
+<td align="right">3</td>
+<td align="right">113</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">professional degree (MBA, MD, JD, etc.)</td>
+<td align="right">0</td>
+<td align="right">183</td>
+<td align="right">3</td>
+<td align="right">500</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">some college credit, no degree</td>
+<td align="right">9</td>
+<td align="right">392</td>
+<td align="right">9</td>
+<td align="right">1837</td>
+<td align="right">12</td>
+</tr>
+<tr class="odd">
+<td align="left">some high school</td>
+<td align="right">4</td>
+<td align="right">85</td>
+<td align="right">4</td>
+<td align="right">660</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">trade, technical, or vocational training</td>
+<td align="right">1</td>
+<td align="right">68</td>
+<td align="right">2</td>
+<td align="right">370</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="create-marginal-tables-using-row-col-or-cell" class="section level2">
+<h2>create marginal tables using “row”, “col”, or “cell”</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="left">SchoolDegree</th>
+<th align="right">agender</th>
+<th align="right">female</th>
+<th align="right">genderqueer</th>
+<th align="right">male</th>
+<th align="right">trans</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">associate’s degree</td>
+<td align="right">2.70</td>
+<td align="right">3.94</td>
+<td align="right">3.03</td>
+<td align="right">5.01</td>
+<td align="right">2.78</td>
+</tr>
+<tr class="even">
+<td align="left">bachelor’s degree</td>
+<td align="right">27.03</td>
+<td align="right">47.48</td>
+<td align="right">45.45</td>
+<td align="right">39.69</td>
+<td align="right">27.78</td>
+</tr>
+<tr class="odd">
+<td align="left">high school diploma or equivalent (GED)</td>
+<td align="right">16.22</td>
+<td align="right">5.86</td>
+<td align="right">6.06</td>
+<td align="right">11.00</td>
+<td align="right">8.33</td>
+</tr>
+<tr class="even">
+<td align="left">master’s degree (non-professional)</td>
+<td align="right">5.41</td>
+<td align="right">14.78</td>
+<td align="right">9.09</td>
+<td align="right">9.48</td>
+<td align="right">5.56</td>
+</tr>
+<tr class="odd">
+<td align="left">no high school (secondary school)</td>
+<td align="right">8.11</td>
+<td align="right">0.60</td>
+<td align="right">4.55</td>
+<td align="right">2.17</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">Ph.D.</td>
+<td align="right">2.70</td>
+<td align="right">1.46</td>
+<td align="right">4.55</td>
+<td align="right">1.06</td>
+<td align="right">5.56</td>
+</tr>
+<tr class="odd">
+<td align="left">professional degree (MBA, MD, JD, etc.)</td>
+<td align="right">0.00</td>
+<td align="right">6.50</td>
+<td align="right">4.55</td>
+<td align="right">4.69</td>
+<td align="right">5.56</td>
+</tr>
+<tr class="even">
+<td align="left">some college credit, no degree</td>
+<td align="right">24.32</td>
+<td align="right">13.93</td>
+<td align="right">13.64</td>
+<td align="right">17.24</td>
+<td align="right">33.33</td>
+</tr>
+<tr class="odd">
+<td align="left">some high school</td>
+<td align="right">10.81</td>
+<td align="right">3.02</td>
+<td align="right">6.06</td>
+<td align="right">6.19</td>
+<td align="right">5.56</td>
+</tr>
+<tr class="even">
+<td align="left">trade, technical, or vocational training</td>
+<td align="right">2.70</td>
+<td align="right">2.42</td>
+<td align="right">3.03</td>
+<td align="right">3.47</td>
+<td align="right">5.56</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="instructions-1" class="section level2">
+<h2>INSTRUCTIONS:</h2>
+<ol style="list-style-type: decimal">
+<li>Create other cross-tabulations by changing the variables<br />
+</li>
+<li>try changing the margin argument to col, row, or cell</li>
+</ol>
+</div>
+</div>
+<div id="creating-charts-in-r-using-ggplot2-package" class="section level1">
+<h1>Creating charts in R using ggplot2 package</h1>
+<div id="create-a-simple-column-chart" class="section level2">
+<h2>create a simple column chart</h2>
+<p><img src="merl.tech_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="flip-it-so-that-it-becomes-a-bar-chart-and-the-labels-are-easier-to-read.-plus-add-a-theme" class="section level2">
+<h2>flip it so that it becomes a bar chart and the labels are easier to read. Plus, add a theme</h2>
+<p><img src="merl.tech_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="get-rid-of-na" class="section level2">
+<h2>Get rid of NA</h2>
+<p><img src="merl.tech_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="create-a-simple-histogram" class="section level2">
+<h2>Create a simple histogram</h2>
+<p><img src="merl.tech_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="make-it-look-pretty" class="section level2">
+<h2>make it look pretty</h2>
+<p><img src="merl.tech_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="try-another-theme" class="section level2">
+<h2>try another theme</h2>
+<p><img src="merl.tech_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="instructions-2" class="section level2">
+<h2>INSTRUCTIONS</h2>
+<p>1 Change the x variable with another numeric variable<br />
+2 Change the theme &amp; titles<br />
+3 Change the number of bins</p>
+</div>
+<div id="create-a-density-plot-instead-of-a-histogram" class="section level2">
+<h2>Create a density plot instead of a histogram</h2>
+<p><img src="merl.tech_files/figure-html/density%20plot-1.png" width="672" /></p>
+</div>
+<div id="other-examples-of-charts-with-the-ggplot-package" class="section level2">
+<h2>Other examples of charts with the ggplot package</h2>
+</div>
+</div>
+<div id="relationship-between-employment-status-and-job-preference" class="section level1">
+<h1>Relationship between employment status and job preference</h1>
+<p><img src="merl.tech_files/figure-html/examples-1.png" width="672" /></p>
+<div id="stacked-bar-chart" class="section level2">
+<h2>Stacked bar chart</h2>
+<p>Comparing gender breakdown across ages <img src="merl.tech_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

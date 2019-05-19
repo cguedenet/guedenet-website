@@ -9,7 +9,6 @@ output:
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
-
 ```{r setup, message=FALSE, warning=FALSE, echo=FALSE}
 # activate the packages you have already installed using the library() function
 library(prettydoc)
@@ -19,15 +18,16 @@ library(ggthemes) # to add themes to ggplots
 library(corrr) # to create correlation matrices and plots
 library(tidyverse) #includes a set of packages that work well together (ggplot, tidyr, dplyr, and others)
 library(psych) # for summarizing data
+library(RCurl)
 ```
 
 ```{r import data, message=FALSE, warning=FALSE, echo=FALSE}
-# import
-df <- read.csv("2016.coders.survey.csv")
+# read in your data
+df <-read.csv(text=getURL("https://raw.githubusercontent.com/cguedenet/guedenet-website/master/2016.coders.survey.csv"))
 ```
 
 R Studio is an "Integrated Development Environment", or IDE. This means it is a front-end for R that makes it much easier to work with. R Studio is also free, and available for Windows, Mac, and Linux platforms.
-```{r Rstudio intro, message=FALSE, warning=FALSE, echo=FALSE, eval = FALSE}
+```{r Rstudio intro, message=FALSE, warning=FALSE, echo=TRUE, eval = FALSE}
 
 # This is where you execute R ccommands. R interprets what you write and prints the results
 1 + 1
