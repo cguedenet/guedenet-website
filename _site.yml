@@ -7,7 +7,7 @@ navbar:
       href: index.html
     - text: "Projects and tutorials"
       href: projects.html
-      href: MERL.tech.html
+    - href: MERL.tech.html
   right:
     - icon: fa-envelope fa-lg
       href: contact.html
