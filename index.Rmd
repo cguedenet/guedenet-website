@@ -14,7 +14,9 @@ library(fontawesome)
 
 <img src="images/profile.jpg" style="width:25%; border:10px solid; margin-right: 20px" align="left">
 
-Welcome to my website. I am an evaluator by trade and a very enthusiastic R user and learner by choice. I work with data and data tools almost daily as part of my job as a Monitoring, Evaluation, and Learning (MEL) Advisor for a non-profit. I enjoy working in R so much that I do it in my free time and not just for work.  This space is where I hope to consolidate all my writings and personal R projects going forward. This is my way of contributing -- even if it's tiny -- to the R community I have benefitted from so much and a way to organize my work in one place. Also, I just wanted to try building a website in R. Maybe one day I'll move it to a Shiny server.
+Welcome to my website. I am an evaluator by trade and a very enthusiastic R user and learner by choice. I work with data and data tools almost daily as part of my job as a Monitoring, Evaluation, and Learning (MEL) Advisor for a non-profit. I enjoy working in R so much that I do it in my free time and not just for work.  This space is where I hope to consolidate all my writings and personal R projects going forward. This is a very small way of contributing to the R community I have benefitted from so much and a way to organize my work in one place. 
+
+Also, I just wanted to try building a website in R. Maybe one day I'll move it to a Shiny server.
 
 
 For anyone interested, my full CV is available [here](files/Charles_Guedenet_CV.pdf).
