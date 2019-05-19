@@ -17,5 +17,3 @@ navbar:
       href: https://www.linkedin.com/in/guedenet/
 output:
   html_document:
-  theme: paper
-  css: 'styles.css'

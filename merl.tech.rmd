@@ -1,13 +1,20 @@
 ---
 title: "MERL Tech DC workshop: Up your Data Game with R"
-output:
-  pdf_document: default
-  prettydoc::html_pretty:
-    theme: cayman
-    highlight: github
+author: "Charles Guedenet"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+        toc_depth: 2
+        number_sections: true
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+This tutorial was developed for a workshop at MERL Tech DC in 2018 and presented with Jonathan Seiden. You can find the R code and slides on [Github](https://github.com/cguedenet/MERL-Tech-workshop.git).   
+  
+The code and examples below are an introduction to the possibilities of using the free and open-source R programming language and software environment for data processing, analysis, and visualization.  
+  
+#Introduction
+This was built in an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
 ```{r setup, message=FALSE, warning=FALSE, echo=FALSE}
 # activate the packages you have already installed using the library() function
@@ -18,7 +25,8 @@ library(ggthemes) # to add themes to ggplots
 library(corrr) # to create correlation matrices and plots
 library(tidyverse) #includes a set of packages that work well together (ggplot, tidyr, dplyr, and others)
 library(psych) # for summarizing data
-library(RCurl)
+library(forcats) # useful for working with factor variabls
+library(RCurl) # for reading in web data or files
 ```
 
 ```{r import data, message=FALSE, warning=FALSE, echo=FALSE}
@@ -27,7 +35,7 @@ df <-read.csv(text=getURL("https://raw.githubusercontent.com/cguedenet/guedenet-
 ```
 
 R Studio is an "Integrated Development Environment", or IDE. This means it is a front-end for R that makes it much easier to work with. R Studio is also free, and available for Windows, Mac, and Linux platforms.
-```{r Rstudio intro, message=FALSE, warning=FALSE, echo=TRUE, eval = FALSE}
+```{r Rstudio intro, message=FALSE, warning=FALSE, echo=FALSE, eval = FALSE}
 
 # This is where you execute R ccommands. R interprets what you write and prints the results
 1 + 1
@@ -44,10 +52,10 @@ area <- width * length           # multiple the values of both previous variable
 area  # print the result
 ```
 
-# Cleaning your data  
+#Cleaning your data  
 Analyzing survey data typically starts with cleaning, recoding, and restructuring, or even joining data sets. For example, you may want to know how many missing cases there are or how many people responded to each question. Or you may want to group certain continuous variables like ages or income into ranges. Lastly, you may want to find and deal with outliers.  
   
-Functions like distinct() cab quickly get rid of duplicate rows across all variables or for specific variables (e.g. a person's ID or email address)  
+Functions like distinct() can quickly get rid of duplicate rows across all variables or for specific variables (e.g. a person's ID or email address)  
     
 Functions like mutate() can help create new variables. For example, creating a new variable for age ranges based on an existing variable for age.  
    
@@ -65,17 +73,15 @@ df <- distinct(df, ID.x, ID.y, .keep_all = TRUE)
 df <- df %>% mutate(AgeCut = cut(Age, c(10,29,34,50,65,100)))
 ```
 
-# Overview of survey data and basic analysis  
+#Overview of survey data and basic analysis  
 When you're analyzing survey data, one of the first things you need to do is get an overview of your data. For example, you may want to know basic stats for continuous variables or frequency tables for other types of data.  
 
-## Get summary stats for Age and AgeCut variables  
+##Get summary stats  
 ```{r summary, warning=FALSE, message=FALSE ,echo=FALSE, results = 'asis'}
-library(formattable)
-summary(df$Age) %>% formattable()
-summary(df$AgeCut) %>% formattable()
+summary(df$Age)
 ```
-  
-## add new stats  
+
+##Add new stats to your table  
 ```{r summary2,warning=FALSE, message=FALSE ,echo=FALSE, results = 'asis'}
 df %>% summarise(
   mean = mean(Age, na.rm = TRUE),
@@ -86,7 +92,7 @@ df %>% summarise(
   kable()
 ```
   
-## add a grouping variable
+##Add a grouping variable
 ```{r grouping, warning=FALSE, message=FALSE ,echo=FALSE, results = 'asis'}
 df %>%
   group_by(Gender) %>%
@@ -98,32 +104,31 @@ df %>%
   kable()
 ```
 
-## INSTRUCTIONS: 
+###Exercise: 
 1. Get summary statistics for another continuous variable, like income, MonthsProgramming, ExpectedEarning, MoneyForLearning, etc. (reference the df object)
    
 2. Add or change the summary stats you want to calculate (Other useful functions: mean, median, sd, IQR, min, max, quantile, first, last, nth, n, n_distinct)
    
 3. Add a new grouping variable
   
-## Here's another way to quickly generate summary statistics for select numeric variables using the psyche package  
+##Quickly summarize data
+Here's another way to quickly generate summary statistics for select numeric variables using the psyche package  
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
-# Here's another way to quickly generate summary statistics for select numeric variables using the psyche package
-
 df %>% select(c("Age", "Income", "ExpectedEarning", "HoursLearning", "Gender"))%>%
   describeBy() %>% kable()
 ```
 
-# Working with Categorical data  
+#Working with Categorical data  
     
-## summarize categorical data by creating frequency tables using sjmisc package   
+##Summarize categorical data     
   
-Frequency table for the variable: "SchoolDegree"
+Summarize categorical data and create frequency tables using sjmisc package    
 ```{r warning=FALSE, message=TRUE ,echo=TRUE, eval=TRUE, results = 'asis'}
-# summarize categorical data by creating frequency tables using sjmisc package
+# summarize categorical data by creating frequency tables using sjmisc package. Frequency table for the variable: "SchoolDegree"
 df %>% frq(SchoolDegree) %>% kable()
 ```
 
-## create cross-tabulations with two or more variables
+##Create cross-tabulations with two or more variables
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
 df %>% flat_table(SchoolDegree, Gender) %>%
   data.frame() %>%
@@ -131,7 +136,7 @@ df %>% flat_table(SchoolDegree, Gender) %>%
   kable()
 ```
 
-## create marginal tables using "row", "col", or "cell"
+##Create marginal tables using "row", "col", or "cell"
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
 df %>% flat_table(SchoolDegree, Gender, margin = "col") %>%
   data.frame() %>%
@@ -139,50 +144,49 @@ df %>% flat_table(SchoolDegree, Gender, margin = "col") %>%
   kable()
 ```
    
-##INSTRUCTIONS:   
+###Exercise:   
 1. Create other cross-tabulations by changing the variables   
 2. try changing the margin argument to col, row, or cell
     
      
-# Creating charts in R using ggplot2 package   
+#Create charts using ggplot2   
    
-## create a simple column chart
+##create a simple column chart
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
 df %>% ggplot(aes(EmploymentField)) + geom_bar()
 ```
    
-## flip it so that it becomes a bar chart and the labels are easier to read. Plus, add a theme
-```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
-df %>% ggplot(aes(EmploymentField)) +
+####flip it and order bars
+```{r warning=FALSE, message=FALSE ,echo=TRUE, eval=TRUE, results = 'asis'}
+
+df %>% ggplot(aes(fct_infreq(EmploymentField))) +
   geom_bar() +
-  coord_flip() +
-  theme_classic()
+  coord_flip()
 ```
    
-## Get rid of NA
-```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
+####Get rid of NA
+```{r warning=FALSE, message=FALSE ,echo=TRUE, eval=TRUE, results = 'asis'}
 df %>% filter(EmploymentField!="") %>%
-  ggplot(aes(EmploymentField)) +
+  ggplot(aes(fct_infreq(EmploymentField))) +
   geom_bar() +
-  coord_flip() +
-  theme_classic()
+  coord_flip()
 ```
    
-## Create a simple histogram  
-```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
+##Create a simple histogram  
+```{r warning=FALSE, message=FALSE ,echo=TRUE, eval=TRUE, results = 'asis'}
 df %>% ggplot(aes(x=Age)) + 
   geom_histogram()
 ```
     
-## make it look pretty  
-```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
+####Adding titles and themes to charts  
+```{r warning=FALSE, message=FALSE ,echo=TRUE, eval=TRUE, results = 'asis'}
 df %>% ggplot(aes(x=Age)) +
   geom_histogram(color = "white") +
   theme_minimal() +
   labs(title = "My Title", subtitle = "My subtitle") 
 ```
-   
-## try another theme
+      
+Try another theme  
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
 df %>% ggplot(aes(x=Age)) +
   geom_histogram(color = "white", bins = 35) +
@@ -190,14 +194,14 @@ df %>% ggplot(aes(x=Age)) +
   labs(title = "My Title", subtitle = "My subtitle") 
 ```
    
-## INSTRUCTIONS   
+###Exercise:   
 1 Change the x variable with another numeric variable   
 2 Change the theme & titles   
 3 Change the number of bins   
     
    
-## Create a density plot instead of a histogram   
-```{r density plot, message=FALSE, warning=FALSE, echo=FALSE}
+##Create a density plot   
+```{r density plot, message=FALSE, warning=FALSE, echo=TRUE}
 # Compare only males and females comparison
 df %>% filter(Gender == "female" | Gender == "male") %>% 
   ggplot(aes(x=Age, fill = Gender)) + 
@@ -205,9 +209,9 @@ df %>% filter(Gender == "female" | Gender == "male") %>%
   theme_fivethirtyeight()
 ```
 
-## Other examples of charts with the ggplot package    
-# Relationship between employment status and job preference   
-```{r examples, message=FALSE, warning=FALSE, echo=FALSE}
+##Other examples of charts with the ggplot package    
+Relationship between employment status and job preference   
+```{r examples, message=FALSE, warning=FALSE, echo=TRUE}
 df %>% flat_table(EmploymentStatus, JobPref) %>% data.frame() %>%
   ggplot(aes(EmploymentStatus, JobPref)) +
   geom_tile(aes(fill = Freq), colour = "white") +
@@ -216,9 +220,9 @@ df %>% flat_table(EmploymentStatus, JobPref) %>% data.frame() %>%
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
    
-## Stacked bar chart   
+###Stacked bar chart   
 Comparing gender breakdown across ages
-```{r warning=FALSE , message=FALSE ,echo=FALSE}
+```{r warning=FALSE , message=FALSE ,echo=TRUE}
 df %>% select(Age, Gender) %>%
   group_by(Age, Gender) %>%
   summarise(count=n()) %>%

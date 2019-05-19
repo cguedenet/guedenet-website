@@ -9,6 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Charles Guedenet" />
 
 
 <title>MERL Tech DC workshop: Up your Data Game with R</title>
@@ -19,6 +20,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -262,6 +266,92 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -269,6 +359,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -281,7 +381,7 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Charles Guedenet Website</a>
+      <a class="navbar-brand" href="index.html">Charles Guedenet</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -290,6 +390,9 @@ $(document).ready(function () {
 </li>
 <li>
   <a href="projects.html">Projects and tutorials</a>
+</li>
+<li>
+  <a href="MERL.tech.html"></a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -321,40 +424,33 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">MERL Tech DC workshop: Up your Data Game with R</h1>
+<h4 class="author">Charles Guedenet</h4>
 
 </div>
 
 
+<p>This tutorial was developed for a workshop at MERL Tech DC in 2018 and presented with Jonathan Seiden. You can find the R code and slides on <a href="https://github.com/cguedenet/MERL-Tech-workshop.git">Github</a>.</p>
+<p>The code and examples below are an introduction to the possibilities of using the free and open-source R programming language and software environment for data processing, analysis, and visualization.</p>
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
 <p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook. When you execute code within the notebook, the results appear beneath the code.</p>
 <p>R Studio is an “Integrated Development Environment”, or IDE. This means it is a front-end for R that makes it much easier to work with. R Studio is also free, and available for Windows, Mac, and Linux platforms.</p>
-<pre class="r"><code># This is where you execute R ccommands. R interprets what you write and prints the results
-1 + 1
-
-# A basic concept in programming is called a variable. A variable allows you to store a value (e.g. 5) or an object (e.g. a function) in R for easy access later. 
-## TIP: use &quot;Alt&quot; + &quot;-&quot; instead of &quot;&lt;&quot; + &quot;-&quot;
-
-#creating variables for later use. Use the less sign followed by a dash to create a variable
-
-width &lt;- 5                       # assigns the value 5 to the variable &quot;width&quot;
-length &lt;- 8                      # assigns the value 8 to the variable &quot;width&quot;
-area &lt;- width * length           # multiple the values of both previous variables to create a new variable: &quot;area&quot; 
-
-area  # print the result</code></pre>
+</div>
 <div id="cleaning-your-data" class="section level1">
-<h1>Cleaning your data</h1>
+<h1><span class="header-section-number">2</span> Cleaning your data</h1>
 <p>Analyzing survey data typically starts with cleaning, recoding, and restructuring, or even joining data sets. For example, you may want to know how many missing cases there are or how many people responded to each question. Or you may want to group certain continuous variables like ages or income into ranges. Lastly, you may want to find and deal with outliers.</p>
-<p>Functions like distinct() cab quickly get rid of duplicate rows across all variables or for specific variables (e.g. a person’s ID or email address)</p>
+<p>Functions like distinct() can quickly get rid of duplicate rows across all variables or for specific variables (e.g. a person’s ID or email address)</p>
 <p>Functions like mutate() can help create new variables. For example, creating a new variable for age ranges based on an existing variable for age.</p>
 </div>
 <div id="overview-of-survey-data-and-basic-analysis" class="section level1">
-<h1>Overview of survey data and basic analysis</h1>
+<h1><span class="header-section-number">3</span> Overview of survey data and basic analysis</h1>
 <p>When you’re analyzing survey data, one of the first things you need to do is get an overview of your data. For example, you may want to know basic stats for continuous variables or frequency tables for other types of data.</p>
-<div id="get-summary-stats-for-age-and-agecut-variables" class="section level2">
-<h2>Get summary stats for Age and AgeCut variables</h2>
-<p>Min. 1st Qu. Median Mean 3rd Qu. Max. NA’s 10.00 23.00 27.00 29.18 33.00 86.00 2007 (10,29] (29,34] (34,50] (50,65] (65,100] NA’s 8240 2380 2564 400 27 2009</p>
+<div id="get-summary-stats" class="section level2">
+<h2><span class="header-section-number">3.1</span> Get summary stats</h2>
+<p>Min. 1st Qu. Median Mean 3rd Qu. Max. NA’s 10.00 23.00 27.00 29.18 33.00 86.00 2007</p>
 </div>
-<div id="add-new-stats" class="section level2">
-<h2>add new stats</h2>
+<div id="add-new-stats-to-your-table" class="section level2">
+<h2><span class="header-section-number">3.2</span> Add new stats to your table</h2>
 <table>
 <thead>
 <tr class="header">
@@ -375,7 +471,7 @@ area  # print the result</code></pre>
 </table>
 </div>
 <div id="add-a-grouping-variable" class="section level2">
-<h2>add a grouping variable</h2>
+<h2><span class="header-section-number">3.3</span> Add a grouping variable</h2>
 <table>
 <thead>
 <tr class="header">
@@ -431,17 +527,18 @@ area  # print the result</code></pre>
 </tr>
 </tbody>
 </table>
-</div>
-<div id="instructions" class="section level2">
-<h2>INSTRUCTIONS:</h2>
+<div id="exercise" class="section level3">
+<h3><span class="header-section-number">3.3.1</span> Exercise:</h3>
 <ol style="list-style-type: decimal">
 <li><p>Get summary statistics for another continuous variable, like income, MonthsProgramming, ExpectedEarning, MoneyForLearning, etc. (reference the df object)</p></li>
 <li><p>Add or change the summary stats you want to calculate (Other useful functions: mean, median, sd, IQR, min, max, quantile, first, last, nth, n, n_distinct)</p></li>
 <li><p>Add a new grouping variable</p></li>
 </ol>
 </div>
-<div id="heres-another-way-to-quickly-generate-summary-statistics-for-select-numeric-variables-using-the-psyche-package" class="section level2">
-<h2>Here’s another way to quickly generate summary statistics for select numeric variables using the psyche package</h2>
+</div>
+<div id="quickly-summarize-data" class="section level2">
+<h2><span class="header-section-number">3.4</span> Quickly summarize data</h2>
+<p>Here’s another way to quickly generate summary statistics for select numeric variables using the psyche package</p>
 <table>
 <thead>
 <tr class="header">
@@ -547,11 +644,11 @@ area  # print the result</code></pre>
 </div>
 </div>
 <div id="working-with-categorical-data" class="section level1">
-<h1>Working with Categorical data</h1>
-<div id="summarize-categorical-data-by-creating-frequency-tables-using-sjmisc-package" class="section level2">
-<h2>summarize categorical data by creating frequency tables using sjmisc package</h2>
-<p>Frequency table for the variable: “SchoolDegree”</p>
-<pre class="r"><code># summarize categorical data by creating frequency tables using sjmisc package
+<h1><span class="header-section-number">4</span> Working with Categorical data</h1>
+<div id="summarize-categorical-data" class="section level2">
+<h2><span class="header-section-number">4.1</span> Summarize categorical data</h2>
+<p>Summarize categorical data and create frequency tables using sjmisc package</p>
+<pre class="r"><code># summarize categorical data by creating frequency tables using sjmisc package. Frequency table for the variable: &quot;SchoolDegree&quot;
 df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
 <table class="kable_wrapper">
 <tbody>
@@ -665,7 +762,7 @@ df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
 </table>
 </div>
 <div id="create-cross-tabulations-with-two-or-more-variables" class="section level2">
-<h2>create cross-tabulations with two or more variables</h2>
+<h2><span class="header-section-number">4.2</span> Create cross-tabulations with two or more variables</h2>
 <table>
 <thead>
 <tr class="header">
@@ -762,7 +859,7 @@ df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
 </table>
 </div>
 <div id="create-marginal-tables-using-row-col-or-cell" class="section level2">
-<h2>create marginal tables using “row”, “col”, or “cell”</h2>
+<h2><span class="header-section-number">4.3</span> Create marginal tables using “row”, “col”, or “cell”</h2>
 <table>
 <thead>
 <tr class="header">
@@ -857,9 +954,8 @@ df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
 </tr>
 </tbody>
 </table>
-</div>
-<div id="instructions-1" class="section level2">
-<h2>INSTRUCTIONS:</h2>
+<div id="exercise-1" class="section level3">
+<h3><span class="header-section-number">4.3.1</span> Exercise:</h3>
 <ol style="list-style-type: decimal">
 <li>Create other cross-tabulations by changing the variables<br />
 </li>
@@ -867,57 +963,87 @@ df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
 </ol>
 </div>
 </div>
-<div id="creating-charts-in-r-using-ggplot2-package" class="section level1">
-<h1>Creating charts in R using ggplot2 package</h1>
-<div id="create-a-simple-column-chart" class="section level2">
-<h2>create a simple column chart</h2>
-<p><img src="merl.tech_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
-<div id="flip-it-so-that-it-becomes-a-bar-chart-and-the-labels-are-easier-to-read.-plus-add-a-theme" class="section level2">
-<h2>flip it so that it becomes a bar chart and the labels are easier to read. Plus, add a theme</h2>
+<div id="create-charts-using-ggplot2" class="section level1">
+<h1><span class="header-section-number">5</span> Create charts using ggplot2</h1>
+<div id="create-a-simple-column-chart" class="section level2">
+<h2><span class="header-section-number">5.1</span> create a simple column chart</h2>
+<p><img src="merl.tech_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div id="flip-it-and-order-bars" class="section level4">
+<h4><span class="header-section-number">5.1.0.1</span> flip it and order bars</h4>
+<pre class="r"><code>df %&gt;% ggplot(aes(fct_infreq(EmploymentField))) +
+  geom_bar() +
+  coord_flip()</code></pre>
 <p><img src="merl.tech_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
-<div id="get-rid-of-na" class="section level2">
-<h2>Get rid of NA</h2>
+<div id="get-rid-of-na" class="section level4">
+<h4><span class="header-section-number">5.1.0.2</span> Get rid of NA</h4>
+<pre class="r"><code>df %&gt;% filter(EmploymentField!=&quot;&quot;) %&gt;%
+  ggplot(aes(fct_infreq(EmploymentField))) +
+  geom_bar() +
+  coord_flip()</code></pre>
 <p><img src="merl.tech_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
+</div>
 <div id="create-a-simple-histogram" class="section level2">
-<h2>Create a simple histogram</h2>
+<h2><span class="header-section-number">5.2</span> Create a simple histogram</h2>
+<pre class="r"><code>df %&gt;% ggplot(aes(x=Age)) + 
+  geom_histogram()</code></pre>
 <p><img src="merl.tech_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-</div>
-<div id="make-it-look-pretty" class="section level2">
-<h2>make it look pretty</h2>
+<div id="adding-titles-and-themes-to-charts" class="section level4">
+<h4><span class="header-section-number">5.2.0.1</span> Adding titles and themes to charts</h4>
+<pre class="r"><code>df %&gt;% ggplot(aes(x=Age)) +
+  geom_histogram(color = &quot;white&quot;) +
+  theme_minimal() +
+  labs(title = &quot;My Title&quot;, subtitle = &quot;My subtitle&quot;) </code></pre>
 <p><img src="merl.tech_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Try another theme<br />
+<img src="merl.tech_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
-<div id="try-another-theme" class="section level2">
-<h2>try another theme</h2>
-<p><img src="merl.tech_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-</div>
-<div id="instructions-2" class="section level2">
-<h2>INSTRUCTIONS</h2>
+<div id="exercise-2" class="section level3">
+<h3><span class="header-section-number">5.2.1</span> Exercise:</h3>
 <p>1 Change the x variable with another numeric variable<br />
 2 Change the theme &amp; titles<br />
 3 Change the number of bins</p>
 </div>
-<div id="create-a-density-plot-instead-of-a-histogram" class="section level2">
-<h2>Create a density plot instead of a histogram</h2>
+</div>
+<div id="create-a-density-plot" class="section level2">
+<h2><span class="header-section-number">5.3</span> Create a density plot</h2>
+<pre class="r"><code># Compare only males and females comparison
+df %&gt;% filter(Gender == &quot;female&quot; | Gender == &quot;male&quot;) %&gt;% 
+  ggplot(aes(x=Age, fill = Gender)) + 
+  geom_density(alpha = .6) + 
+  theme_fivethirtyeight()</code></pre>
 <p><img src="merl.tech_files/figure-html/density%20plot-1.png" width="672" /></p>
 </div>
 <div id="other-examples-of-charts-with-the-ggplot-package" class="section level2">
-<h2>Other examples of charts with the ggplot package</h2>
-</div>
-</div>
-<div id="relationship-between-employment-status-and-job-preference" class="section level1">
-<h1>Relationship between employment status and job preference</h1>
+<h2><span class="header-section-number">5.4</span> Other examples of charts with the ggplot package</h2>
+<p>Relationship between employment status and job preference</p>
+<pre class="r"><code>df %&gt;% flat_table(EmploymentStatus, JobPref) %&gt;% data.frame() %&gt;%
+  ggplot(aes(EmploymentStatus, JobPref)) +
+  geom_tile(aes(fill = Freq), colour = &quot;white&quot;) +
+  scale_fill_continuous() +
+  coord_fixed(ratio = 1) +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))</code></pre>
 <p><img src="merl.tech_files/figure-html/examples-1.png" width="672" /></p>
-<div id="stacked-bar-chart" class="section level2">
-<h2>Stacked bar chart</h2>
-<p>Comparing gender breakdown across ages <img src="merl.tech_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<div id="stacked-bar-chart" class="section level3">
+<h3><span class="header-section-number">5.4.1</span> Stacked bar chart</h3>
+<p>Comparing gender breakdown across ages</p>
+<pre class="r"><code>df %&gt;% select(Age, Gender) %&gt;%
+  group_by(Age, Gender) %&gt;%
+  summarise(count=n()) %&gt;%
+  ggplot(aes(Age,count,fill=Gender)) +
+  geom_bar(stat=&#39;identity&#39;, position=&#39;fill&#39;, color=&#39;white&#39;) + 
+  xlim(c(10,70))</code></pre>
+<p><img src="merl.tech_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 </div>
+</div>
 
 
 
+</div>
+</div>
 
 </div>
 
