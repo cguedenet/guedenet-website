@@ -389,10 +389,10 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="projects.html">Projects and tutorials</a>
+  <a href="sharing.html">Sharing</a>
 </li>
 <li>
-  <a href="MERL.tech.html"></a>
+  <a href="learning.html">Learning</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -433,7 +433,7 @@ div.tocify {
 <p>The code and examples below are an introduction to the possibilities of using the free and open-source R programming language and software environment for data processing, analysis, and visualization.</p>
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
-<p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook. When you execute code within the notebook, the results appear beneath the code.</p>
+<p>This was built in an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook. When you execute code within the notebook, the results appear beneath the code.</p>
 <p>R Studio is an “Integrated Development Environment”, or IDE. This means it is a front-end for R that makes it much easier to work with. R Studio is also free, and available for Windows, Mac, and Linux platforms.</p>
 </div>
 <div id="cleaning-your-data" class="section level1">
@@ -649,7 +649,9 @@ div.tocify {
 <h2><span class="header-section-number">4.1</span> Summarize categorical data</h2>
 <p>Summarize categorical data and create frequency tables using sjmisc package</p>
 <pre class="r"><code># summarize categorical data by creating frequency tables using sjmisc package. Frequency table for the variable: &quot;SchoolDegree&quot;
-df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
+df %&gt;%
+  frq(SchoolDegree) %&gt;%
+  kable()</code></pre>
 <table class="kable_wrapper">
 <tbody>
 <tr>
@@ -978,7 +980,8 @@ df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
 </div>
 <div id="get-rid-of-na" class="section level4">
 <h4><span class="header-section-number">5.1.0.2</span> Get rid of NA</h4>
-<pre class="r"><code>df %&gt;% filter(EmploymentField!=&quot;&quot;) %&gt;%
+<pre class="r"><code>df %&gt;%
+  filter(EmploymentField != &quot;&quot;) %&gt;%
   ggplot(aes(fct_infreq(EmploymentField))) +
   geom_bar() +
   coord_flip()</code></pre>
@@ -987,15 +990,15 @@ df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
 </div>
 <div id="create-a-simple-histogram" class="section level2">
 <h2><span class="header-section-number">5.2</span> Create a simple histogram</h2>
-<pre class="r"><code>df %&gt;% ggplot(aes(x=Age)) + 
+<pre class="r"><code>df %&gt;% ggplot(aes(x = Age)) +
   geom_histogram()</code></pre>
 <p><img src="merl.tech_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <div id="adding-titles-and-themes-to-charts" class="section level4">
 <h4><span class="header-section-number">5.2.0.1</span> Adding titles and themes to charts</h4>
-<pre class="r"><code>df %&gt;% ggplot(aes(x=Age)) +
+<pre class="r"><code>df %&gt;% ggplot(aes(x = Age)) +
   geom_histogram(color = &quot;white&quot;) +
   theme_minimal() +
-  labs(title = &quot;My Title&quot;, subtitle = &quot;My subtitle&quot;) </code></pre>
+  labs(title = &quot;My Title&quot;, subtitle = &quot;My subtitle&quot;)</code></pre>
 <p><img src="merl.tech_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Try another theme<br />
 <img src="merl.tech_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
@@ -1010,31 +1013,35 @@ df %&gt;% frq(SchoolDegree) %&gt;% kable()</code></pre>
 <div id="create-a-density-plot" class="section level2">
 <h2><span class="header-section-number">5.3</span> Create a density plot</h2>
 <pre class="r"><code># Compare only males and females comparison
-df %&gt;% filter(Gender == &quot;female&quot; | Gender == &quot;male&quot;) %&gt;% 
-  ggplot(aes(x=Age, fill = Gender)) + 
-  geom_density(alpha = .6) + 
+df %&gt;%
+  filter(Gender == &quot;female&quot; | Gender == &quot;male&quot;) %&gt;%
+  ggplot(aes(x = Age, fill = Gender)) +
+  geom_density(alpha = .6) +
   theme_fivethirtyeight()</code></pre>
 <p><img src="merl.tech_files/figure-html/density%20plot-1.png" width="672" /></p>
 </div>
 <div id="other-examples-of-charts-with-the-ggplot-package" class="section level2">
 <h2><span class="header-section-number">5.4</span> Other examples of charts with the ggplot package</h2>
 <p>Relationship between employment status and job preference</p>
-<pre class="r"><code>df %&gt;% flat_table(EmploymentStatus, JobPref) %&gt;% data.frame() %&gt;%
+<pre class="r"><code>df %&gt;%
+  flat_table(EmploymentStatus, JobPref) %&gt;%
+  data.frame() %&gt;%
   ggplot(aes(EmploymentStatus, JobPref)) +
   geom_tile(aes(fill = Freq), colour = &quot;white&quot;) +
   scale_fill_continuous() +
   coord_fixed(ratio = 1) +
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))</code></pre>
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))</code></pre>
 <p><img src="merl.tech_files/figure-html/examples-1.png" width="672" /></p>
 <div id="stacked-bar-chart" class="section level3">
 <h3><span class="header-section-number">5.4.1</span> Stacked bar chart</h3>
 <p>Comparing gender breakdown across ages</p>
-<pre class="r"><code>df %&gt;% select(Age, Gender) %&gt;%
+<pre class="r"><code>df %&gt;%
+  select(Age, Gender) %&gt;%
   group_by(Age, Gender) %&gt;%
-  summarise(count=n()) %&gt;%
-  ggplot(aes(Age,count,fill=Gender)) +
-  geom_bar(stat=&#39;identity&#39;, position=&#39;fill&#39;, color=&#39;white&#39;) + 
-  xlim(c(10,70))</code></pre>
+  summarise(count = n()) %&gt;%
+  ggplot(aes(Age, count, fill = Gender)) +
+  geom_bar(stat = &quot;identity&quot;, position = &quot;fill&quot;, color = &quot;white&quot;) +
+  xlim(c(10, 70))</code></pre>
 <p><img src="merl.tech_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 </div>

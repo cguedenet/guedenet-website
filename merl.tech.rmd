@@ -21,9 +21,9 @@ This was built in an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When y
 library(prettydoc)
 library(sjmisc) # useful for data wrangling work like recoding, grouping variables, summarizing data
 library(knitr) # for creating reports in Word, pdf, html
-library(ggthemes) # to add themes to ggplots 
+library(ggthemes) # to add themes to ggplots
 library(corrr) # to create correlation matrices and plots
-library(tidyverse) #includes a set of packages that work well together (ggplot, tidyr, dplyr, and others)
+library(tidyverse) # includes a set of packages that work well together (ggplot, tidyr, dplyr, and others)
 library(psych) # for summarizing data
 library(forcats) # useful for working with factor variabls
 library(RCurl) # for reading in web data or files
@@ -31,7 +31,7 @@ library(RCurl) # for reading in web data or files
 
 ```{r import data, message=FALSE, warning=FALSE, echo=FALSE}
 # read in your data
-df <-read.csv(text=getURL("https://raw.githubusercontent.com/cguedenet/guedenet-website/master/2016.coders.survey.csv"))
+df <- read.csv(text = getURL("https://raw.githubusercontent.com/cguedenet/guedenet-website/master/2016.coders.survey.csv"))
 ```
 
 R Studio is an "Integrated Development Environment", or IDE. This means it is a front-end for R that makes it much easier to work with. R Studio is also free, and available for Windows, Mac, and Linux platforms.
@@ -40,16 +40,16 @@ R Studio is an "Integrated Development Environment", or IDE. This means it is a 
 # This is where you execute R ccommands. R interprets what you write and prints the results
 1 + 1
 
-# A basic concept in programming is called a variable. A variable allows you to store a value (e.g. 5) or an object (e.g. a function) in R for easy access later. 
+# A basic concept in programming is called a variable. A variable allows you to store a value (e.g. 5) or an object (e.g. a function) in R for easy access later.
 ## TIP: use "Alt" + "-" instead of "<" + "-"
 
-#creating variables for later use. Use the less sign followed by a dash to create a variable
+# creating variables for later use. Use the less sign followed by a dash to create a variable
 
-width <- 5                       # assigns the value 5 to the variable "width"
-length <- 8                      # assigns the value 8 to the variable "width"
-area <- width * length           # multiple the values of both previous variables to create a new variable: "area" 
+width <- 5 # assigns the value 5 to the variable "width"
+length <- 8 # assigns the value 8 to the variable "width"
+area <- width * length # multiple the values of both previous variables to create a new variable: "area"
 
-area  # print the result
+area # print the result
 ```
 
 #Cleaning your data  
@@ -68,9 +68,9 @@ df <- distinct(df)
 df <- distinct(df, ID.x, ID.y, .keep_all = TRUE)
 
 # Group responses and create a new variable using mutate function (dplyr package)
-#this creates a new variable that recodes the Age variable into 5 age categories 
+# this creates a new variable that recodes the Age variable into 5 age categories
 
-df <- df %>% mutate(AgeCut = cut(Age, c(10,29,34,50,65,100)))
+df <- df %>% mutate(AgeCut = cut(Age, c(10, 29, 34, 50, 65, 100)))
 ```
 
 #Overview of survey data and basic analysis  
@@ -83,11 +83,12 @@ summary(df$Age)
 
 ##Add new stats to your table  
 ```{r summary2,warning=FALSE, message=FALSE ,echo=FALSE, results = 'asis'}
-df %>% summarise(
-  mean = mean(Age, na.rm = TRUE),
-  median = median(Age, na.rm = TRUE),
-  IQR = IQR(Age, na.rm = TRUE),
-  n = n()
+df %>%
+  summarise(
+    mean = mean(Age, na.rm = TRUE),
+    median = median(Age, na.rm = TRUE),
+    IQR = IQR(Age, na.rm = TRUE),
+    n = n()
   ) %>%
   kable()
 ```
@@ -100,7 +101,7 @@ df %>%
     mean = mean(Age, na.rm = TRUE),
     median = median(Age, na.rm = TRUE),
     IQR = IQR(Age, na.rm = TRUE), n = n()
-    ) %>%
+  ) %>%
   kable()
 ```
 
@@ -114,8 +115,10 @@ df %>%
 ##Quickly summarize data
 Here's another way to quickly generate summary statistics for select numeric variables using the psyche package  
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
-df %>% select(c("Age", "Income", "ExpectedEarning", "HoursLearning", "Gender"))%>%
-  describeBy() %>% kable()
+df %>%
+  select(c("Age", "Income", "ExpectedEarning", "HoursLearning", "Gender")) %>%
+  describeBy() %>%
+  kable()
 ```
 
 #Working with Categorical data  
@@ -125,22 +128,26 @@ df %>% select(c("Age", "Income", "ExpectedEarning", "HoursLearning", "Gender"))%
 Summarize categorical data and create frequency tables using sjmisc package    
 ```{r warning=FALSE, message=TRUE ,echo=TRUE, eval=TRUE, results = 'asis'}
 # summarize categorical data by creating frequency tables using sjmisc package. Frequency table for the variable: "SchoolDegree"
-df %>% frq(SchoolDegree) %>% kable()
+df %>%
+  frq(SchoolDegree) %>%
+  kable()
 ```
 
 ##Create cross-tabulations with two or more variables
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
-df %>% flat_table(SchoolDegree, Gender) %>%
+df %>%
+  flat_table(SchoolDegree, Gender) %>%
   data.frame() %>%
-  spread(Gender,Freq) %>%
+  spread(Gender, Freq) %>%
   kable()
 ```
 
 ##Create marginal tables using "row", "col", or "cell"
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
-df %>% flat_table(SchoolDegree, Gender, margin = "col") %>%
+df %>%
+  flat_table(SchoolDegree, Gender, margin = "col") %>%
   data.frame() %>%
-  spread(Gender,Freq) %>%
+  spread(Gender, Freq) %>%
   kable()
 ```
    
@@ -166,7 +173,8 @@ df %>% ggplot(aes(fct_infreq(EmploymentField))) +
    
 ####Get rid of NA
 ```{r warning=FALSE, message=FALSE ,echo=TRUE, eval=TRUE, results = 'asis'}
-df %>% filter(EmploymentField!="") %>%
+df %>%
+  filter(EmploymentField != "") %>%
   ggplot(aes(fct_infreq(EmploymentField))) +
   geom_bar() +
   coord_flip()
@@ -174,24 +182,24 @@ df %>% filter(EmploymentField!="") %>%
    
 ##Create a simple histogram  
 ```{r warning=FALSE, message=FALSE ,echo=TRUE, eval=TRUE, results = 'asis'}
-df %>% ggplot(aes(x=Age)) + 
+df %>% ggplot(aes(x = Age)) +
   geom_histogram()
 ```
     
 ####Adding titles and themes to charts  
 ```{r warning=FALSE, message=FALSE ,echo=TRUE, eval=TRUE, results = 'asis'}
-df %>% ggplot(aes(x=Age)) +
+df %>% ggplot(aes(x = Age)) +
   geom_histogram(color = "white") +
   theme_minimal() +
-  labs(title = "My Title", subtitle = "My subtitle") 
+  labs(title = "My Title", subtitle = "My subtitle")
 ```
       
 Try another theme  
 ```{r warning=FALSE, message=FALSE ,echo=FALSE, eval=TRUE, results = 'asis'}
-df %>% ggplot(aes(x=Age)) +
+df %>% ggplot(aes(x = Age)) +
   geom_histogram(color = "white", bins = 35) +
   theme_fivethirtyeight() +
-  labs(title = "My Title", subtitle = "My subtitle") 
+  labs(title = "My Title", subtitle = "My subtitle")
 ```
    
 ###Exercise:   
@@ -203,30 +211,34 @@ df %>% ggplot(aes(x=Age)) +
 ##Create a density plot   
 ```{r density plot, message=FALSE, warning=FALSE, echo=TRUE}
 # Compare only males and females comparison
-df %>% filter(Gender == "female" | Gender == "male") %>% 
-  ggplot(aes(x=Age, fill = Gender)) + 
-  geom_density(alpha = .6) + 
+df %>%
+  filter(Gender == "female" | Gender == "male") %>%
+  ggplot(aes(x = Age, fill = Gender)) +
+  geom_density(alpha = .6) +
   theme_fivethirtyeight()
 ```
 
 ##Other examples of charts with the ggplot package    
 Relationship between employment status and job preference   
 ```{r examples, message=FALSE, warning=FALSE, echo=TRUE}
-df %>% flat_table(EmploymentStatus, JobPref) %>% data.frame() %>%
+df %>%
+  flat_table(EmploymentStatus, JobPref) %>%
+  data.frame() %>%
   ggplot(aes(EmploymentStatus, JobPref)) +
   geom_tile(aes(fill = Freq), colour = "white") +
   scale_fill_continuous() +
   coord_fixed(ratio = 1) +
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 ```
    
 ###Stacked bar chart   
 Comparing gender breakdown across ages
 ```{r warning=FALSE , message=FALSE ,echo=TRUE}
-df %>% select(Age, Gender) %>%
+df %>%
+  select(Age, Gender) %>%
   group_by(Age, Gender) %>%
-  summarise(count=n()) %>%
-  ggplot(aes(Age,count,fill=Gender)) +
-  geom_bar(stat='identity', position='fill', color='white') + 
-  xlim(c(10,70))
+  summarise(count = n()) %>%
+  ggplot(aes(Age, count, fill = Gender)) +
+  geom_bar(stat = "identity", position = "fill", color = "white") +
+  xlim(c(10, 70))
 ```
