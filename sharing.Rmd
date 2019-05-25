@@ -10,5 +10,13 @@ title: "Sharing"
 
 
 ##Projects
-This page is under construction. I'll be adding fun data projects here.
+This page is under construction. I'll be adding fun data projects here.  
+  
+##Writings  
+- [Data, data, everywhere: Leveraging Technology for better Data Management](http://dmeforpeace.org/learn/data-data-everywhere-leveraging-technology-better-data-management), DM&E for Peace  
+  
+- [3 Steps for Data Transformation: Turning Numbers into Knowledge](http://www.ictworks.org/2014/05/26/3-steps-for-data-transformation-turning-numbers-into-knowledge/), ICTworks   
+  
+- [M&E in closing spaces - how to assess and mitigate risks](https://www.dmeforpeace.org/resource/me-in-closing-spaces-how-to-assess-and-mitigate-risks/), co-authored with Shanthi Kalathil; DM&E for Peace  
+
 
