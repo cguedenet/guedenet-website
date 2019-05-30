@@ -1,11 +1,8 @@
 ---
 title: "Learning"
-author: "Charles Guedenet"
 ---
 
-##Online resources for the R programming language
-    
-###For help with your code, reach out to the R user community  
+###For those just starting in R, reach out to the R user community for help and inspiration  
 - [stats.stackexchange](https://stats.stackexchange.com/questions/tagged/r)  
 - [Stackoverflow](https://stackoverflow.com/questions/tagged/r) 
 - [R Studio Community](https://community.rstudio.com/)  - R Studio specific forums on a wide variety of topics)  
