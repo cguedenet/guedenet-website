@@ -237,7 +237,7 @@ textsH <- data.frame(texts) %>%
   separate(B, c("author", "text"), "Guedenet: ") %>%
   na.omit()
 
-texts2 <- rbind(texts2, textsH)
+texts2 <- rbind(textsC, textsH)
 
 ## format date variable and author variable
 texts2$time <- mdy_hm(texts2$time)
@@ -312,86 +312,40 @@ news %>%
   kable(., "html") %>%
   kable_styling(full_width = F, bootstrap_options = "striped")
 ```
-# Compare texts from Charles and Hannah
+
 ```{r}
 #separate texts by author
-HG <- texts2 %>% filter(author == "Hannah Guedenet")
-CG <- texts2 %>% filter(author == "Charles G")
+HG <- texts2 %>% filter(author == "Hannah ")
+CG <- texts2 %>% filter(author == "Charles ")
 ```
-## Find common words and create a commonality cloud  
-This word cloud only shows the top 30 words most used by both me and Hannah.  
-```{r commonality clouds, fig.height= 4, fig.width= 4}
-#Each of our HG and CG corpora is composed of many individual messages
-#To treat the HG Messages as a single document and likewise for CG, 
-#I use paste() to combine allthe messages in each corpus along with the parameter collapse = " ".
-#This collapses all messages (separated by a space) into a single vector. Then I
-#can create a single vector containing all documents.
 
-collapse <- paste(clean_corp, collapse = " ")
 
-#convert to corpus
-all_corpus <- VCorpus(VectorSource(collapse))
-
-# Create collapsed vector for HG
-all_HG <- paste(HG$text, collapse = " ")
-
-# Create collapsed vector for CG
-all_CG <- paste(CG$text, collapse = " ")
-
-# create single collapsed vector with both CG and HG
-all_together <- c(all_HG, all_CG)
-
-# Convert to a corpus
-all_together <- VCorpus(VectorSource(all_together))
-
-# Clean the corpus
-all_clean <- clean_corpus(all_together)
-
-# Create all_tdm
-all_tdm <- TermDocumentMatrix(all_clean)
-
-# Create all_m
-all_m <- as.matrix(all_tdm)
-head(all_m)
-
-all_m2 <- data.frame(all_m) %>% mutate(terms = row.names(.)) %>%
-  rename(Hannah = X1, Charles = X2) %>%
-  filter(Hannah > 100 & Charles > 100) %>%
-  mutate(diff = abs(Hannah - Charles)) %>%
-  arrange(desc(-diff)) %>%
-  mutate(rank = c(1:nrow(.))) %>%
-  select(terms, rank)
-
-# Print a commonality cloud
-color_pal <- viridis(n=8)
-commonality.cloud(all_m, max.words = 30,
-                  colors = color_pal,
-                  scale = c(3,.5))
-wordcloud2(all_m2,shape = 'star')
-
-```
-# Visualizing messages over time
+# Visualizing messages over time  
+   
 ```{r}
 # create new data frame with number of messages per day
 p_load(zoo)
 library(lubridate)
 time <- texts2 %>%
-  mutate(day = mdy_hm(time)) %>%
+  mutate(day = ymd_hms(time)) %>%
   count(day) %>%
   mutate(month = as.yearmon(day)) %>%
-  na.omit()
+  na.omit() %>% group_by(month) %>% summarize(n = sum(n))
 
-hchart(time, type = "line",
-       hcaes(x = day,
-             y = n))
+ggplot(time, aes(month, n)) +
+  geom_bar(stat = "identity", fill = "#075254") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 11, hjust = 0.0, face = "bold"),
+        axis.title.y = element_blank()) +
+    ggtitle("Number of messages over time")
+
 ```
-# Analyzing sentiment
+# Analyzing sentiment   
 I analyzed our text messages for emotions and sentiments. There are a few limitations of this approach:  
-1.longer messages will have more positive and negatively associated words that may cancel each other out;  
-2.Smaller messages may communicate  strong emotions but not show up in the top ten because they're short;  
-3.The lexicon I used does not do always do a good job of detecting emotions partly because it doesn't get sarcasm or negated words (e.g. "not happy"); and  
-4.We sometimes forward other people's messages so the emotion doesn't necessarily reflect our own feelings although this is fairly rare.   
-   
+1. Longer messages will have more positive and negatively associated words that may cancel each other out;  
+2. Smaller messages may communicate  strong emotions but not show up in the top ten because they're short;  
+3. The lexicon I used does not do always do a good job of detecting emotions partly because it doesn't get sarcasm or negated words (e.g. "not happy"); and  
+4. We sometimes forward other people's messages so the emotion doesn't necessarily reflect our own feelings although this is fairly rare.   
 ```{r}
 #fetch sentiment words from texts
 # the NRC sentiment dictionary looks at 8 different emotions and 2 sentiments (positive, negative). It was developed by Saif Mohammad and Peter Turney. "Emotions Evoked by Common Words and Phrases: Using Mechanical Turk to Create an Emotion Lexicon." 
@@ -410,7 +364,7 @@ sentiment2 <- cbind(texts2,sentiment)
 sentiment_word <- cbind(freqTermsdf_short, sentiment_word)
 ```
 
-
+### Here is a word cloud composed entirely of words from our whatsApp messages tagged as expressing "joy" sentiments. The size corresponds to the frequency of the words.   
 ```{r}
 #summarize sentiments and add or create new columns for weekday, day, month, year
 sentiment3 <- sentiment2 %>% select(-c(4,5)) %>%   #take out emoji columns
@@ -425,20 +379,20 @@ nice.messages <- sentiment2 %>% mutate(rownames = row.names(.)) %>%
   filter(joy >= 4 | rownames(.) == 1549 | rownames == 2915) %>%
   select(1:3) %>% slice(-c(2,1))
 
-datatable(nice.messages)
+#datatable(nice.messages)
 
 # create special word cloud with wordcloud2 package
 cloud_joy <- sentiment_word %>% filter(joy == 1) %>% select(2,1)
 
 # word cloud of all words evoking "joy"
-
+color_pal <- viridis(n=5)
 wordcloud2(cloud_joy, size = 2, shape = 'heart', color = color_pal)
 letterCloud(cloud_joy, word = "R", size = 2)
 ```
   
-#Sentiment over time  
+# Sentiment over time  
   
-There's a huge drop in the number of messages on Sunday which makes sense since we're together most of the day and don't tend to message each other when we're in the house together. We're also at church half the day so no texting there. There's still a fair bit of messaging on Saturday but that's likely because we spend part of the day apart, taking one of the girls to French school while the other stays home. Both Saturday and Sunday are our most positive days while positivity plummets on Tuesdays and Thursday. This puzzled me until I mentioned this to Hannah and she reflected on how those two days are when she goes into the office. So I charted the percentage of positive messages for Hannah only and sure enough, the percentage of positive messages is lower on those two days but especially so on Tuesdays.  
+There's a significant drop in the number of messages on Sunday which makes sense since we're together most of the day. There's still a fair bit of messaging on Saturday but that's likely because we spend part of the day apart, taking one of our daughters to various activities while the other stays home. Both Saturday and Sunday are our most positive days.     
 ```{r sentiment1, fig.width = 6, fig.height = 4}
 sentiment_month <- sentiment3 %>% group_by(month, year) %>% summarize(positive = sum(positive))
 
@@ -473,7 +427,7 @@ sentiment_wday %>% gather("stat", "number",3:5) %>%
   ggtitle("Comparison of WhatsApp sentiment across days of the week") +
   theme(axis.title.x = element_blank(), axis.title.y = element_blank())
 ```
-
+Positivity plummets on Tuesdays and Thursday. This puzzled me until I mentioned this to Hannah and she reflected on how those two days are when she goes into the office. So I charted the percentage of positive messages for Hannah only and sure enough, the percentage of positive messages is lower on those two days but especially so on Tuesdays.
 ```{r sentiment2, fig.width = 6, fig.height = 4}
 sentiment_wday_H %>% gather("stat", "number",3:5) %>%
   ggplot(aes(x = weekday, y = number, fill = stat, label = number)) +
