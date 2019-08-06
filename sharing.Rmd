@@ -11,11 +11,8 @@ The workshop introduced participants to the possibilities of using the R program
 
 
 ## Projects  
-[**Text mining and Natural Language Processing (NLP) with two years WhatsApp messages**](whatsApp/text.mining.final.html)  
+[**Text mining and Natural Language Processing (NLP)**](whatsApp/text.mining.final.html)  Analysis of whatsApp messages, including word frequencies, trends in messaging over time, and sentiment analysis.  
   
-## Writings  
-- [**Data, data, everywhere: Leveraging Technology for better Data Management**](http://dmeforpeace.org/learn/data-data-everywhere-leveraging-technology-better-data-management), DM&E  
-   
 ## Writings  
 - [**Data, data, everywhere: Leveraging Technology for better Data Management**](http://dmeforpeace.org/learn/data-data-everywhere-leveraging-technology-better-data-management), DM&E for Peace  
 - [**3 Steps for Data Transformation: Turning Numbers into Knowledge**](http://www.ictworks.org/2014/05/26/3-steps-for-data-transformation-turning-numbers-into-knowledge/), ICTworks  
