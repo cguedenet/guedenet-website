@@ -7,9 +7,9 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Charles Guedenet" />
 
 
 <title>Learning</title>
@@ -247,18 +247,6 @@ $(document).ready(function () {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
 
@@ -325,44 +313,20 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Learning</h1>
-<h4 class="author">Charles Guedenet</h4>
 
 </div>
 
 
-<div id="online-resources-for-the-r-programming-language" class="section level2">
-<h2>Online resources for the R programming language</h2>
-<div id="for-help-with-your-code-reach-out-to-the-r-user-community" class="section level3">
-<h3>For help with your code, reach out to the R user community</h3>
-<ul>
-<li><a href="https://stats.stackexchange.com/questions/tagged/r">stats.stackexchange</a><br />
-</li>
-<li><a href="https://stackoverflow.com/questions/tagged/r">Stackoverflow</a></li>
-<li><a href="https://community.rstudio.com/">R Studio Community</a> - R Studio specific forums on a wide variety of topics)<br />
-</li>
-<li><a href="https://www.kaggle.com/">Kaggle datasets</a> - Find a dataset you like and start working on it. Some datasets have freely available R script in the form of “kernels” that you apply to the dataset.</li>
-</ul>
-</div>
-<div id="online-learning-and-trouble-shooting" class="section level3">
-<h3>Online learning and trouble-shooting</h3>
-<ul>
-<li><a href="https://www.rstudio.com/online-learning/">Rstudio</a> - online learning resources, including tutorials, articles, and guides<br />
-</li>
-<li><a href="https://www.rstudio.com/resources/cheatsheets/">Rstudio cheatsheets</a> - good points of reference as you begin using new functions and packages.<br />
-</li>
-<li><a href="https://www.datacamp.com/">DataCamp</a> - online courses and tutorials</li>
-<li><a href="https://swirlstats.com/">Swirl</a> - learn R in R through interactive R Studio lessons</li>
-</ul>
-</div>
-<div id="data-podcasts" class="section level3">
-<h3>Data podcasts</h3>
-<ul>
-<li><a href="http://datastori.es/">Data stories</a> - A podcast on data visualization with Enrico Bertini and Moritz Stefaner<br />
-</li>
-<li><a href="https://www.datacamp.com/community/podcast">Data Framed</a> - DataCamp’s official podcast. Presented by Hugo Bowne-Anderson.</li>
-</ul>
-</div>
-</div>
+<p>###For those just starting in R, reach out to the R user community for help and inspiration<br />
+- <a href="https://stats.stackexchange.com/questions/tagged/r">stats.stackexchange</a><br />
+- <a href="https://stackoverflow.com/questions/tagged/r">Stackoverflow</a> - <a href="https://community.rstudio.com/">R Studio Community</a> - R Studio specific forums on a wide variety of topics)<br />
+- <a href="https://www.kaggle.com/">Kaggle datasets</a> - Find a dataset you like and start working on it. Some datasets have freely available R script in the form of “kernels” that you apply to the dataset.</p>
+<p>###Online learning and trouble-shooting<br />
+- <a href="https://www.rstudio.com/online-learning/">Rstudio</a> - online learning resources, including tutorials, articles, and guides<br />
+- <a href="https://www.rstudio.com/resources/cheatsheets/">Rstudio cheatsheets</a> - good points of reference as you begin using new functions and packages.<br />
+- <a href="https://www.datacamp.com/">DataCamp</a> - online courses and tutorials - <a href="https://swirlstats.com/">Swirl</a> - learn R in R through interactive R Studio lessons</p>
+<p>###Data podcasts - <a href="http://datastori.es/">Data stories</a> - A podcast on data visualization with Enrico Bertini and Moritz Stefaner<br />
+- <a href="https://www.datacamp.com/community/podcast">Data Framed</a> - DataCamp’s official podcast. Presented by Hugo Bowne-Anderson.</p>
 
 
 
@@ -381,6 +345,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
