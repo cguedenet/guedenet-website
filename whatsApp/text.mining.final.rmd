@@ -29,6 +29,7 @@ Below are the R packages I used, grouped by their function: text mining/NLP, dat
 #### Data cleaning and processing
 * **lubridate** for working with dates
 * **janitor** for cleaning and processingdata (e.g. recoding variables, renaming, dealing with missing values, and creat)
+* **stringr** for working with text (e.g. extracting and finding words)
 
 #### Data visualization packages
 * **knitr** for presenting tables in html
@@ -112,7 +113,7 @@ clean_corp[[99]]$content
 ```
   
 Finally, it's time to create frequency matrices of the corpus
-```{r create TDM and DTM, echo=TRUE}
+```{r create TDM and DTM}
 qual_tdm <- TermDocumentMatrix(clean_corp)
 qual_tdm_matrix <- as.matrix(qual_tdm)
 ```
@@ -129,7 +130,7 @@ I'm happy to see that "love" shows up at #9! When I looked at co-occurence later
 It's also interesting that "sorry" comes up at about the same frequency. However, it sounds about right to me  that people who love each other can also apologize to each other. 
    
 Words like "get", "home", "now", or "going" are also in the top 10 and this likely reflects the fact that much of our WhatsApp communication is about logistics (i.e., when I'll be leaving work, where I'm going, or when I expect to get home).The word "girls" refers to our two daughters.
-```{r frequency of terms, echo = TRUE}
+```{r frequency of terms}
 #calculate total frequency of terms and sort in decreasing order
 freqTerms <- rowSums(qual_tdm_matrix) %>% sort(., decreasing = TRUE)
 
@@ -223,7 +224,7 @@ love_example <- love[[5]]$content
 
 
 # Compare messages by author  
-Clearly, Hannah is much more active on WhatsApp than me! 61% of all messages sent in the last two years were from Hannah. That's 23% more than me. The average number of characters in our messages is not significantly different; however, Hannah's longest message is twice as long as mine.  
+Clearly, Hannah is much more active on WhatsApp than me! 61% of all messages sent in the last two years were from Hannah. That's 23% more than me. The average number of characters in our messages is not significantly different, to my surprise.  
 ```{r separate, results = 'asis', fig.width = 4, fig.height = 4}
 #Use tidyverse and lubridate to separate into multiple columns and format the date variable
 textsC <- data.frame(texts) %>%
@@ -288,12 +289,13 @@ num_texts %>%
 Hannah shared some good news stories over the last couple of years. I've extracted all the stories from New York Times, Washington Post, NPR, and the BBC to get a feel for what news we thought was worth sharing with each other.
 ```{r}
 textsdf <- data.frame(texts2)
+
 library(stringr)
 #using stringr package, define the pattern we want to search for
 url_pattern <- "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 
 #create a new variable to store URLs
-texts2$contentURL <- str_extract(texts2$text, url_pattern)
+textsdf$contentURL <- str_extract(texts2$text, url_pattern)
 
 #extract all urls with news stories from nyt, wapo, and npr
 nyt <- grep("nytimes",textsdf$contentURL, value = FALSE)
@@ -306,23 +308,18 @@ news <- c(nyt,wapo,npr,bbc)
 news <- textsdf[news,] %>% data.frame() %>% select(c(1,2,3))
 
 # use kableExtra package to nicely present the table
-datatable(news, class = 'cell-border stripe',
-          caption = 'Table 1: links shared from 2017-2019')
- news %>%
+news %>%
   kable(., "html") %>%
-  kable_styling(full_width = F, bootstrap_options = "striped", position = "float_right")
+  kable_styling(full_width = F, bootstrap_options = "striped")
 ```
-
-
-#compare texts from Charles and Hannah
+# Compare texts from Charles and Hannah
 ```{r}
 #separate texts by author
 HG <- texts2 %>% filter(author == "Hannah Guedenet")
 CG <- texts2 %>% filter(author == "Charles G")
 ```
-
-
-#Find common words and create a commonality cloud
+## Find common words and create a commonality cloud  
+This word cloud only shows the top 30 words most used by both me and Hannah.  
 ```{r commonality clouds, fig.height= 4, fig.width= 4}
 #Each of our HG and CG corpora is composed of many individual messages
 #To treat the HG Messages as a single document and likewise for CG, 
@@ -373,14 +370,13 @@ commonality.cloud(all_m, max.words = 30,
 wordcloud2(all_m2,shape = 'star')
 
 ```
-
-
-# visualizing messages over time
+# Visualizing messages over time
 ```{r}
 # create new data frame with number of messages per day
 p_load(zoo)
+library(lubridate)
 time <- texts2 %>%
-  mutate(day = date(time)) %>%
+  mutate(day = mdy_hm(time)) %>%
   count(day) %>%
   mutate(month = as.yearmon(day)) %>%
   na.omit()
