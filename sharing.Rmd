@@ -10,7 +10,7 @@ title: "Sharing"
 
 
 ##Projects
-This page is under construction. I'll be adding fun data projects here.  
+[Text mining and Natural Language Processing (NLP) with two years WhatsApp messages](whatsApp/text.mining.final.html)
   
 ##Writings  
 - [Data, data, everywhere: Leveraging Technology for better Data Management](http://dmeforpeace.org/learn/data-data-everywhere-leveraging-technology-better-data-management), DM&E for Peace  
