@@ -18,3 +18,4 @@ navbar:
       href: https://www.linkedin.com/in/guedenet/
 output:
   html_document:
+  theme: cosmo
