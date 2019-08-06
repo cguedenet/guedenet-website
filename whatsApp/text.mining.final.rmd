@@ -1,0 +1,484 @@
+---
+title: "WhatsApp analysis"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+        toc_depth: 2
+        number_sections: false
+        theme: cosmo
+---
+
+# Introduction and background  
+I started this project to test out some R packages I'd been meaning to learn. I thought WhatsApp messages between my wife and I would be a fun dataset to start with.Of course, as I looked more into the data, other questions came up and new R packages came to my attention, leading to other side projects, and so on. I decided finally to hit the pause button and to share what I had to-date.  
+  
+There are still a few text mining and Natural Language Processing (NLP) methods I want to do but that will have to come later.  
+   
+Not all the code chunks will be shared here. If you're interested in seeing all the underlying code and notes, check out the file in Github.  
+   
+
+### Packages  
+Below are the R packages I used, grouped by their function: text mining/NLP, data cleaning and processing, data visualization, and miscellaneous.
+  
+#### Text mining/NLP  
+
+* **tm** text mining. Use for converting vectors to Source objects; preprocessing/cleaning functions
+* **SnowballC** provides a wordStem() function, which for a character vector, returns the same vector of terms in its root form
+* **syuzhet** takes a body of text and identifies which emotions it represents and whether the emotion is positive or negative
+  
+#### Data cleaning and processing
+* **lubridate** for working with dates
+* **janitor** for cleaning and processingdata (e.g. recoding variables, renaming, dealing with missing values, and creat)
+
+#### Data visualization packages
+* **knitr** for presenting tables in html
+* **wordcloud** to make pretty word clouds
+* **wordcloud2** to do more with wordclouds in html
+* **ggthemes** for adding ggplot themes to charts
+* **viridisLite** for color schemes that can be perceived by colorblind readers
+* **ggalt** to create lollipop charts
+* **DT** to easily create interactive data tables
+* **kableExtra** for creating nicely formatted (but static) data tables
+* **highcharter** for making interactive html charts. Itprovides an R interface to the Highcharts JavaScript graphics library 
+
+  
+#### Miscellaneous  
+* **tidyverse** for loading all the core Hadley Wickham packages (e.g. ggplot2, dplyr, forcats, etc.)
+* **devtools** for installing packages directly from github
+* **rwhatsapp** nicely prepares and structures a whatsapp text file for use in R
+* **pacman** useful for installing and/or updating many packages at once
+
+  
+```{r chunks, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+  
+
+```{r load packages, echo=FALSE}
+library(pacman) # install and update several packages with one function
+p_load(ggthemes, janitor,knitr,tidyverse,wordcloud,tm,tidytext,SnowballC, devtools, lubridate, ggthemes, ggalt, wordcloud, DT, viridis, highcharter, syuzhet)
+
+install_github("lchiffon/wordcloud2")
+library(wordcloud2)
+```
+After loading all the packages and importing the dataset, I create the corpus using the tm package.  
+```{r load whatsapp file and create Corpus object, echo = TRUE}
+texts <- readLines("whatsapp.txt")
+#create the corpus using tm
+
+docs <- Corpus(VectorSource(texts)) #fully kept in memory and optimized for importing, preprocessing, and transforming texts. However, some limitations to minimize memory pressure
+
+docs2 <- VCorpus(VectorSource(texts)) #use this when using transformations that can't process character vectors and return character vectors (of the same length)
+```
+
+```{r examine the corpus,  eval = FALSE}
+#how many messages?
+length(docs2)
+
+# Look at first document using double brackets to get metadata on second document
+docs2[[99]]$content 
+```
+
+
+The next step is to apply cleaning functions to the entire corpus (this can take a minute).
+```{r preprocessing, echo = TRUE}
+# These steps replace common signs with a space
+# content_transformer is used to create a wrapper to get and set the content of text documents
+trans <- content_transformer(function(x, pattern) gsub(pattern, " ", x))
+clean_corp <- tm_map(docs2, trans, "://(.*)") #remove everything after ://
+clean_corp <- tm_map(docs2, trans, "@")
+clean_corp <- tm_map(docs2, trans, "\\|")
+
+# It's easier to create a custom function so that you can apply the same functions over multiple corpora
+clean_corpus <- function(corpus){
+  corpus <- tm_map(corpus, removePunctuation,
+                   preserve_intra_word_contractions = TRUE,
+                   preserve_intra_word_dashes = TRUE)
+  corpus <- tm_map(corpus, content_transformer(tolower)) # use content_transformer when using base R functions like tolower()
+  corpus <- tm_map(corpus, removeWords, c(stopwords("en"), "hannah guedenet", "media","omit", "charles","omitted"))
+  corpus <- tm_map(corpus, stripWhitespace)
+  corpus <- tm_map(corpus, removeNumbers)
+  #corpus <- tm_map(corpus, stemDocument, language = "english")
+  return(corpus)
+}
+
+#apply preprocessing function to textCorpus (corpus of qual data)
+clean_corp <- clean_corpus(clean_corp)
+```
+
+```{r eval = FALSE}
+## see how it's cleaned up one of the stories
+clean_corp[[99]]$content
+```
+  
+Finally, it's time to create frequency matrices of the corpus
+```{r create TDM and DTM, echo=TRUE}
+qual_tdm <- TermDocumentMatrix(clean_corp)
+qual_tdm_matrix <- as.matrix(qual_tdm)
+```
+
+```{r eval = FALSE}
+inspect(qual_tdm[40:50,20:40])
+```
+  
+# Word frequencies  
+Now the fun starts! I can start looking at word frequencies. What words were used most in whatsApp messages?   
+  
+I'm happy to see that "love" shows up at #9! When I looked at co-occurence later, I discovered that the word "love" appears fairly often with the words "beaucoup" and "much", which suggests to me that in many cases, we're saying it to show affection towards each other as opposed to talking about how lovely the weather is, for example.
+
+It's also interesting that "sorry" comes up at about the same frequency. However, it sounds about right to me  that people who love each other can also apologize to each other. 
+   
+Words like "get", "home", "now", or "going" are also in the top 10 and this likely reflects the fact that much of our WhatsApp communication is about logistics (i.e., when I'll be leaving work, where I'm going, or when I expect to get home).The word "girls" refers to our two daughters.
+```{r frequency of terms, echo = TRUE}
+#calculate total frequency of terms and sort in decreasing order
+freqTerms <- rowSums(qual_tdm_matrix) %>% sort(., decreasing = TRUE)
+
+# turn into a dataframe
+freqTermsdf <- freqTerms %>% data.frame()
+names(freqTermsdf) <- "number"
+freqTermsdf <- freqTermsdf %>% mutate(terms = row.names(.)) %>% arrange(desc(number)) %>% filter(terms != "omitted")
+```
+ 
+
+    
+ 
+```{r term freq bar chart, fig.width= 4, fig.height = 4}
+#create bar chart, reorder and labelling
+freqBar <- ggplot(freqTermsdf[1:20,], aes(x = reorder(terms,number), y=number)) + geom_bar(stat = "identity", fill = "#9ba7a7") +
+  geom_text(aes(label = number),size = 4, hjust = 2, color = "white") + coord_flip() +
+  labs(title = "Words with the greatest frequency", x = "Number of mentions", y = "terms", subtitle = "Top 20") +
+  geom_hline(yintercept = 0, size =1, colour = "#9ba7a7") +
+  coord_flip() + theme_minimal() +
+  theme(axis.title.y = element_blank(),
+        plot.title = element_text(size = 12, hjust = -.1),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 11)) +
+  theme(panel.grid.major = element_line(color = "#d8e6e6" ),
+        panel.grid.minor = element_line("#d8e6e6"),
+        plot.title = element_text(face = "bold"))
+
+freqBar
+```
+
+
+
+**Simple word cloud**
+   
+Words that appear in at least 100 messages  
+```{r word cloud, fig.width= 4, fig.height = 4}
+# create word cloud with three colors (red and gray provide a good contrast for high and low freq words)
+wordcloud(freqTermsdf$term, 
+          freqTermsdf$num,
+          min.freq = 100,
+          scale = c(3,.9), # indicates the range of the size of the words
+          colors = brewer.pal(8, "Dark2"),
+          random.order = FALSE) # random order places terms with highest frequency in the middle
+```
+  
+# Word co-occurence  
+Love has a co-occurence of 14% and 13% with beaucoup and much. The "beaucoup" means "a lot" in French, which we use occasionally in our texts.  
+  
+```{r co-occurrence, results = 'asis'}
+#correlation is a quantitative measure of the co-occurrence of words in multiple documents.
+#The tm package provides the findAssocs() function to do this.  Specify the DTM, the term of interest and the correlation limit (between 0 and 1)
+#first, create the document term matrix
+qual_dtm <- DocumentTermMatrix(clean_corp)
+
+library(kableExtra)
+
+## associations with "love"
+associations <- findAssocs(qual_dtm, "love", 0.1) %>%
+  data.frame() %>%
+  mutate(words = row.names(.),`co-occurence` = love) %>%
+  select(2:3)  %>%
+  kable(., "html") %>%
+  kable_styling(full_width = F)
+```
+`r associations`  
+   
+I like that "hugs" has the highest co-occurence with "girls" at 23% although that is quickly followed by words that refer to more practical day-to-day logistics like "give" and "bath" (said in the context of giving our daughters baths).  
+```{r co-occurence again, results = 'asis'}
+## associations with "girls"
+associations2 <- findAssocs(qual_dtm, "girls", 0.13) %>% data.frame() %>%
+  mutate(words = row.names(.),`co-occurence` = girls) %>%
+  select(2:3) %>%
+  kable(., "html") %>%
+  kable_styling(full_width = F)
+```
+`r associations2`  
+  
+```{r filtering, results = 'asis', eval = FALSE}
+#tm_filter returns a corpus containing documents where FUN matches
+love <- tm_filter(docs2, FUN = function(x) any(grep("love", content(x))))
+
+#hugs <- list_vect2df(girls) #creates corpus (requires qdap)
+
+#subset Corpus
+love_example <- love[[5]]$content
+```
+
+
+# Compare messages by author  
+Clearly, Hannah is much more active on WhatsApp than me! 61% of all messages sent in the last two years were from Hannah. That's 23% more than me. The average number of characters in our messages is not significantly different; however, Hannah's longest message is twice as long as mine.  
+```{r separate, results = 'asis', fig.width = 4, fig.height = 4}
+#Use tidyverse and lubridate to separate into multiple columns and format the date variable
+texts2 <- data.frame(texts) %>%
+  separate(texts, c("time", "B"), " - ") %>%
+  separate(B, c("author", "text"), ": ") %>%
+  na.omit()
+
+## format date variable and author variable
+texts2$time <- mdy_hm(texts2$time)
+texts2$author <- as.factor(texts2$author)
+```
+
+
+  
+```{r message comparison, results = 'asis', fig.width = 4, fig.height = 4}
+#count the number of characters in each message
+num_texts <- texts2 %>% mutate(char.count = nchar(texts2$text)) %>% group_by(author) %>%
+  summarize(min = min(char.count), max = max(char.count), mean = mean(char.count), median = median(char.count),
+            count = n()) %>% filter(author != "")
+
+num_texts %>% kable(., "html") %>%
+  kable_styling(full_width = F)
+
+texts2 %>% na.omit() %>% tabyl(author) %>%
+  adorn_pct_formatting(digits = 0) %>%
+  kable(., "html") %>%
+  kable_styling(full_width = F)
+```
+
+
+```{r comparison plot, results = 'asis', fig.width = 5, fig.height = 4}
+num_texts %>%
+  ggplot(aes(x = author, y = count)) +
+  geom_lollipop(point.size = 5, point.colour = "#098b8e") +
+  coord_flip() +
+  theme_minimal() +
+  theme(axis.title.y = element_blank(),
+        plot.title = element_text(size = 11, hjust = -.1),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(size = 10),
+        axis.text.y=element_text(margin=margin(r=5,l=0),size=10,face="bold"),
+        axis.line.y=element_line(color="#9ba7a7", size=0.15)) +
+  theme(panel.grid.major = element_line(color = "#d8e6e6" ),
+        panel.grid.minor = element_line("#d8e6e6"),
+        plot.margin=unit(c(30,30,30,30),"pt"),
+        plot.title = element_text(face = "bold")) +
+  labs(title = "Number of messages: Hannah vs. Charles",
+       subtitle = "From 2017-2019")
+```
+
+# Extract URLs  
+### Search all news stories shared on nyt, wapo, and npr 
+Hannah shared some good news stories over the last couple of years. I've extracted all the stories from New York Times, Washington Post, NPR, and the BBC to get a feel for what news we thought was worth sharing with each other.
+```{r}
+textsdf <- data.frame(texts2)
+
+#using stringr package, define the pattern we want to search for
+url_pattern <- "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+
+#create a new variable to store URLs
+texts2$contentURL <- str_extract(texts2$text, url_pattern)
+
+#extract all urls with news stories from nyt, wapo, and npr
+nyt <- grep("nytimes",textsdf$contentURL, value = FALSE)
+wapo <- grep("washingtonpost",textsdf$contentURL, value = FALSE)
+npr <- grep("npr.org", textsdf$contentURL, value = FALSE)
+bbc <- grep("bbc", textsdf$contentURL, value = FALSE)
+news <- c(nyt,wapo,npr,bbc)
+
+#data frame with just news URLs
+news <- textsdf[news,] %>% data.frame() %>% select(c(1,2,3))
+
+# use kableExtra package to nicely present the table
+datatable(news, class = 'cell-border stripe',
+          caption = 'Table 1: links shared from 2017-2019')
+ news %>%
+  kable(., "html") %>%
+  kable_styling(full_width = F, bootstrap_options = "striped", position = "float_right")
+```
+
+
+#compare texts from Charles and Hannah
+```{r}
+#separate texts by author
+HG <- texts2 %>% filter(author == "Hannah Guedenet")
+CG <- texts2 %>% filter(author == "Charles G")
+```
+
+
+#Find common words and create a commonality cloud
+```{r commonality clouds, fig.height= 4, fig.width= 4}
+#Each of our HG and CG corpora is composed of many individual messages
+#To treat the HG Messages as a single document and likewise for CG, 
+#I use paste() to combine allthe messages in each corpus along with the parameter collapse = " ".
+#This collapses all messages (separated by a space) into a single vector. Then I
+#can create a single vector containing all documents.
+
+collapse <- paste(clean_corp, collapse = " ")
+
+#convert to corpus
+all_corpus <- VCorpus(VectorSource(collapse))
+
+# Create collapsed vector for HG
+all_HG <- paste(HG$text, collapse = " ")
+
+# Create collapsed vector for CG
+all_CG <- paste(CG$text, collapse = " ")
+
+# create single collapsed vector with both CG and HG
+all_together <- c(all_HG, all_CG)
+
+# Convert to a corpus
+all_together <- VCorpus(VectorSource(all_together))
+
+# Clean the corpus
+all_clean <- clean_corpus(all_together)
+
+# Create all_tdm
+all_tdm <- TermDocumentMatrix(all_clean)
+
+# Create all_m
+all_m <- as.matrix(all_tdm)
+head(all_m)
+
+all_m2 <- data.frame(all_m) %>% mutate(terms = row.names(.)) %>%
+  rename(Hannah = X1, Charles = X2) %>%
+  filter(Hannah > 100 & Charles > 100) %>%
+  mutate(diff = abs(Hannah - Charles)) %>%
+  arrange(desc(-diff)) %>%
+  mutate(rank = c(1:nrow(.))) %>%
+  select(terms, rank)
+
+# Print a commonality cloud
+color_pal <- viridis(n=8)
+commonality.cloud(all_m, max.words = 30,
+                  colors = color_pal,
+                  scale = c(3,.5))
+wordcloud2(all_m2,shape = 'star')
+
+```
+
+
+# visualizing messages over time
+```{r}
+# create new data frame with number of messages per day
+p_load(zoo)
+time <- texts2 %>%
+  mutate(day = date(time)) %>%
+  count(day) %>%
+  mutate(month = as.yearmon(day)) %>%
+  na.omit()
+
+hchart(time, type = "line",
+       hcaes(x = day,
+             y = n))
+```
+# Analyzing sentiment
+I analyzed our text messages for emotions and sentiments. There are a few limitations of this approach: 
+1. longer messages will have more positive and negatively associated words that may cancel each other out;
+2. Smaller messages may communicate  strong emotions but not show up in the top ten because they're short;
+3. The lexicon I used does not do always do a good job of detecting emotions partly because it doesn't get sarcasm or negated words (e.g. "not happy"); and
+4. We sometimes forward other people's messages so the emotion doesn't necessarily reflect our own feelings although this is fairly rare.   
+   
+```{r}
+#fetch sentiment words from texts
+# the NRC sentiment dictionary looks at 8 different emotions and 2 sentiments (positive, negative). It was developed by Saif Mohammad and Peter Turney. "Emotions Evoked by Common Words and Phrases: Using Mechanical Turk to Create an Emotion Lexicon." 
+
+#create a summary of emotions and sentiments per message (this may take a minute or two)
+sentiment <- get_nrc_sentiment(texts2$text) ##each row represents a message
+
+# shortened the freqTermsdf data frame so that applying the sentiment analysis function below takes less long 
+freqTermsdf_short <- freqTermsdf %>% filter(number > 1)
+
+#sentiment of most frequent terms
+sentiment_word <- get_nrc_sentiment(freqTermsdf_short$terms)
+
+#combine original file with messages to emotion/sentiment association file
+sentiment2 <- cbind(texts2,sentiment)
+sentiment_word <- cbind(freqTermsdf_short, sentiment_word)
+```
+
+
+```{r}
+#summarize sentiments and add or create new columns for weekday, day, month, year
+sentiment3 <- sentiment2 %>% select(-c(4,5)) %>%   #take out emoji columns
+  mutate(pos_neg_diff = positive - negative) %>% mutate(month = month(time), day = day(time), year = year(time),
+                                                        weekday = wday(time, label = TRUE))
+
+##pulled out top 5 "joy" messages plus one more. Removed and added some messages from top 5. Word-based ssentiment analysis is not always great at identifying sentiment.
+nice.messages <- sentiment2 %>% mutate(rownames = row.names(.)) %>%
+  filter(author != "") %>%
+  select(c(time, author,text,joy,rownames)) %>%
+  mutate(rownames = row.names(.)) %>%
+  filter(joy >= 4 | rownames(.) == 1549 | rownames == 2915) %>%
+  select(1:3) %>% slice(-c(2,1))
+
+datatable(nice.messages)
+
+# create special word cloud with wordcloud2 package
+cloud_joy <- sentiment_word %>% filter(joy == 1) %>% select(2,1)
+
+# word cloud of all words evoking "joy"
+
+wordcloud2(cloud_joy, size = 2, shape = 'heart', color = color_pal)
+letterCloud(cloud_joy, word = "R", size = 2)
+```
+
+#sentiment over time  
+There's a huge drop in the number of messages on Sunday which makes sense since we're together most of the day and don't tend to message each other when we're in the house together. We're also at church half the day so no texting there. There's still a fair bit of messaging on Saturday but that's likely because we spend part of the day apart, taking one of the girls to French school while the other stays home. Both Saturday and Sunday are our most positive days while positivity plummets on Tuesdays and Thursday. This puzzled me until I mentioned this to Hannah and she reflected on how those two days are when she goes into the office. So I charted the percentage of positive messages for Hannah only and sure enough, the percentage of positive messages is lower on those two days but especially so on Tuesdays.  
+```{r sentiment1, fig.width = 6, fig.height = 4}
+sentiment_month <- sentiment3 %>% group_by(month, year) %>% summarize(positive = sum(positive))
+
+#summarize positivity of sentiments by day of the week and as a ratio of all messages  
+sentiment_wday <- sentiment3 %>% filter(weekday != "") %>%
+  group_by(weekday) %>%
+  summarize(positiveNo = sum(positive, na.rm = TRUE),
+            pos_neg_diff = sum(pos_neg_diff, na.rm = TRUE),
+            count = n(),
+            ratio = round(pos_neg_diff/count,2))
+
+#Hannah only: summarize positivity of sentiments by day of the week and as a ratio of all messages  
+sentiment_wday_H <- sentiment3 %>% filter(weekday != "" & author == "Hannah Guedenet") %>%
+  group_by(weekday) %>%
+  summarize(positiveNo = sum(positive, na.rm = TRUE),
+            pos_neg_diff = sum(pos_neg_diff, na.rm = TRUE),
+            count = n(),
+            ratio = round(pos_neg_diff/count,2))
+
+#create a labels vector to change facet plot titles
+labels <- c(count = "number of messages", pos_neg_diff = "positive messages", ratio = "% positive messages")
+
+#plotting of count, positivity, and ratio of positive messages using facet plots
+sentiment_wday %>% gather("stat", "number",3:5) %>%
+  ggplot(aes(x = weekday, y = number, fill = stat, label = number)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  facet_wrap(~stat, scales = "free", labeller = labeller(stat = labels)) +
+  geom_text(hjust = "right", color = "white") +
+  theme_minimal() + theme(legend.position = "none") +
+  scale_fill_brewer(type = "qual") +
+  ggtitle("Comparison of WhatsApp sentiment across days of the week") +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank())
+```
+
+
+```{r sentiment2, fig.width = 6, fig.height = 4}
+sentiment_wday_H %>% gather("stat", "number",3:5) %>%
+  ggplot(aes(x = weekday, y = number, fill = stat, label = number)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  facet_wrap(~stat, scales = "free", labeller = labeller(stat = labels)) +
+  geom_text(hjust = "right", color = "white") +
+  theme_minimal() + theme(legend.position = "none") +
+  scale_fill_brewer(type = "qual") +
+  ggtitle("Comparison of WhatsApp sentiment across days of the week", subtitle = "Analysis of Hannah's messages only") +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank())
+```
