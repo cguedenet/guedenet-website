@@ -3,7 +3,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 ```{r load_packages, message=FALSE, warning=FALSE, include=FALSE} 
-library(fontawesome)
+
 ```
 
 <link rel="stylesheet" href="styles.css" type="text/css">
