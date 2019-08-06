@@ -168,7 +168,7 @@ freqBar
 **Simple word cloud**
    
 Words that appear in at least 100 messages  
-```{r word cloud, fig.width= 4, fig.height = 4}
+```{r word cloud}
 # create word cloud with three colors (red and gray provide a good contrast for high and low freq words)
 wordcloud(freqTermsdf$term, 
           freqTermsdf$num,
@@ -225,10 +225,17 @@ love_example <- love[[5]]$content
 Clearly, Hannah is much more active on WhatsApp than me! 61% of all messages sent in the last two years were from Hannah. That's 23% more than me. The average number of characters in our messages is not significantly different; however, Hannah's longest message is twice as long as mine.  
 ```{r separate, results = 'asis', fig.width = 4, fig.height = 4}
 #Use tidyverse and lubridate to separate into multiple columns and format the date variable
-texts2 <- data.frame(texts) %>%
+textsC <- data.frame(texts) %>%
   separate(texts, c("time", "B"), " - ") %>%
-  separate(B, c("author", "text"), ": ") %>%
+  separate(B, c("author", "text"), "G: ") %>%
   na.omit()
+
+textsH <- data.frame(texts) %>%
+  separate(texts, c("time", "B"), " - ") %>%
+  separate(B, c("author", "text"), "Guedenet: ") %>%
+  na.omit()
+
+texts2 <- rbind(texts2, textsH)
 
 ## format date variable and author variable
 texts2$time <- mdy_hm(texts2$time)
@@ -280,7 +287,7 @@ num_texts %>%
 Hannah shared some good news stories over the last couple of years. I've extracted all the stories from New York Times, Washington Post, NPR, and the BBC to get a feel for what news we thought was worth sharing with each other.
 ```{r}
 textsdf <- data.frame(texts2)
-
+library(stringr)
 #using stringr package, define the pattern we want to search for
 url_pattern <- "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 
@@ -382,11 +389,11 @@ hchart(time, type = "line",
              y = n))
 ```
 # Analyzing sentiment
-I analyzed our text messages for emotions and sentiments. There are a few limitations of this approach: 
-1. longer messages will have more positive and negatively associated words that may cancel each other out;
-2. Smaller messages may communicate  strong emotions but not show up in the top ten because they're short;
-3. The lexicon I used does not do always do a good job of detecting emotions partly because it doesn't get sarcasm or negated words (e.g. "not happy"); and
-4. We sometimes forward other people's messages so the emotion doesn't necessarily reflect our own feelings although this is fairly rare.   
+I analyzed our text messages for emotions and sentiments. There are a few limitations of this approach:  
+1.longer messages will have more positive and negatively associated words that may cancel each other out;  
+2.Smaller messages may communicate  strong emotions but not show up in the top ten because they're short;  
+3.The lexicon I used does not do always do a good job of detecting emotions partly because it doesn't get sarcasm or negated words (e.g. "not happy"); and  
+4.We sometimes forward other people's messages so the emotion doesn't necessarily reflect our own feelings although this is fairly rare.   
    
 ```{r}
 #fetch sentiment words from texts
@@ -431,8 +438,9 @@ cloud_joy <- sentiment_word %>% filter(joy == 1) %>% select(2,1)
 wordcloud2(cloud_joy, size = 2, shape = 'heart', color = color_pal)
 letterCloud(cloud_joy, word = "R", size = 2)
 ```
-
-#sentiment over time  
+  
+#Sentiment over time  
+  
 There's a huge drop in the number of messages on Sunday which makes sense since we're together most of the day and don't tend to message each other when we're in the house together. We're also at church half the day so no texting there. There's still a fair bit of messaging on Saturday but that's likely because we spend part of the day apart, taking one of the girls to French school while the other stays home. Both Saturday and Sunday are our most positive days while positivity plummets on Tuesdays and Thursday. This puzzled me until I mentioned this to Hannah and she reflected on how those two days are when she goes into the office. So I charted the percentage of positive messages for Hannah only and sure enough, the percentage of positive messages is lower on those two days but especially so on Tuesdays.  
 ```{r sentiment1, fig.width = 6, fig.height = 4}
 sentiment_month <- sentiment3 %>% group_by(month, year) %>% summarize(positive = sum(positive))
@@ -468,7 +476,6 @@ sentiment_wday %>% gather("stat", "number",3:5) %>%
   ggtitle("Comparison of WhatsApp sentiment across days of the week") +
   theme(axis.title.x = element_blank(), axis.title.y = element_blank())
 ```
-
 
 ```{r sentiment2, fig.width = 6, fig.height = 4}
 sentiment_wday_H %>% gather("stat", "number",3:5) %>%
