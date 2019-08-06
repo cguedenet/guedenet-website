@@ -197,6 +197,7 @@ associations <- findAssocs(qual_dtm, "love", 0.1) %>%
   kable(., "html") %>%
   kable_styling(full_width = F)
 ```
+
 `r associations`  
    
 I like that "hugs" has the highest co-occurence with "girls" at 23% although that is quickly followed by words that refer to more practical day-to-day logistics like "give" and "bath" (said in the context of giving our daughters baths).  
