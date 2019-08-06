@@ -2,21 +2,23 @@
 title: "Sharing"
 ---
 
-##Tutorials  
-- [2018 MERL Tech DC workshop: Up your Data Game with R](merl.tech.html)
-    This tutorial was developed for a workshop at MERL Tech DC in 2018 and presented with Jonathan Seiden. You can find the R code and slides on [Github](https://github.com/cguedenet/MERL-Tech-workshop.git).  
-
-     The workshop introduced participants to the possibilities of using the R programming language and software environment for data processing, analysis, and visualization. Using a Rmarkdown document, I walked participants through examples of using R to do common data tasks and, working back from those examples, showed what R programming skills are used in the process. A dataset from Kaggle along with popular R “packages” are used to perform common data tasks, including cleaning, exploring, and plotting data. The goal was to have participants see right away what data science could do for them and the many advantages of using R.
-
-
-##Projects
-[Text mining and Natural Language Processing (NLP) with two years WhatsApp messages](whatsApp/text.mining.final.html)
+## Tutorials   
+- [**2018 MERL Tech DC workshop: Up your Data Game with R**](merl.tech.html)  
+    
+This tutorial was developed for a workshop at MERL Tech DC in 2018 and presented with Jonathan Seiden. You can find the R code and slides on [Github](https://github.com/cguedenet/MERL-Tech-workshop.git).  
+   
+The workshop introduced participants to the possibilities of using the R programming language and software environment for data processing, analysis, and visualization. Using a Rmarkdown document, I walked participants through examples of using R to do common data tasks and, working back from those examples, showed what R programming skills are used in the process. A dataset from Kaggle along with popular R “packages” are used to perform common data tasks, including cleaning, exploring, and plotting data. The goal was to have participants see right away what data science could do for them and the many advantages of using R.  
   
-##Writings  
-- [Data, data, everywhere: Leveraging Technology for better Data Management](http://dmeforpeace.org/learn/data-data-everywhere-leveraging-technology-better-data-management), DM&E for Peace  
+## Projects  
+   
+[**Text mining and Natural Language Processing (NLP)**](whatsApp/text.mining.final.html)   
+    
+## Writings  
   
-- [3 Steps for Data Transformation: Turning Numbers into Knowledge](http://www.ictworks.org/2014/05/26/3-steps-for-data-transformation-turning-numbers-into-knowledge/), ICTworks   
+- [**Data, data, everywhere: Leveraging Technology for better Data Management**](http://dmeforpeace.org/learn/data-data-everywhere-leveraging-technology-better-data-management), DM&E for Peace  
   
-- [M&E in closing spaces - how to assess and mitigate risks](https://www.dmeforpeace.org/resource/me-in-closing-spaces-how-to-assess-and-mitigate-risks/), co-authored with Shanthi Kalathil; DM&E for Peace  
+- [**3 Steps for Data Transformation: Turning Numbers into Knowledge**](http://www.ictworks.org/2014/05/26/3-steps-for-data-transformation-turning-numbers-into-knowledge/), ICTworks   
+  
+- [**M&E in closing spaces - how to assess and mitigate risks**](https://www.dmeforpeace.org/resource/me-in-closing-spaces-how-to-assess-and-mitigate-risks/), co-authored with Shanthi Kalathil; DM&E for Peace  
 
 
