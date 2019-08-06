@@ -13,3 +13,4 @@ RnwWeave: Sweave
 LaTeX: pdfLaTeX
 
 BuildType: Website
+WebsitePath: C:/Users/cguedenet/OneDrive - International Research and Exchanges Board/R/guedenet-website
