@@ -2,18 +2,18 @@
 title: "Learning"
 ---
 
-###For those just starting in R, reach out to the R user community for help and inspiration  
+# For those just starting in R, reach out to the R user community for help and inspiration  
 - [stats.stackexchange](https://stats.stackexchange.com/questions/tagged/r)  
 - [Stackoverflow](https://stackoverflow.com/questions/tagged/r) 
 - [R Studio Community](https://community.rstudio.com/)  - R Studio specific forums on a wide variety of topics)  
 - [Kaggle datasets](https://www.kaggle.com/) - Find a dataset you like and start working on it. Some datasets have freely available R script in the form of "kernels" that you apply to the dataset.   
      
-###Online learning and trouble-shooting  
+# Online learning and trouble-shooting  
 - [Rstudio](https://www.rstudio.com/online-learning/) - online learning resources, including tutorials, articles, and guides   
 - [Rstudio cheatsheets](https://www.rstudio.com/resources/cheatsheets/) - good points of reference as you begin using new functions and packages.  
 - [DataCamp](https://www.datacamp.com/) - online courses and tutorials
 - [Swirl](https://swirlstats.com/) - learn R in R through interactive R Studio lessons  
-
-###Data podcasts
+  
+# Data podcasts  
 - [Data stories](http://datastori.es/) - A podcast on data visualization with Enrico Bertini and Moritz Stefaner  
 - [Data Framed](https://www.datacamp.com/community/podcast) - DataCamp's official podcast. Presented by Hugo Bowne-Anderson.
